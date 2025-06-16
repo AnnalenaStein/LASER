@@ -58,14 +58,19 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
 
-        // Positioniere den Laserpointer zwischen den beiden Spiegelreihen vertial
+        // Positioniere den Laserpointer in der vertikalen Mitte auf der rechten Seite
         const laserPointer = document.getElementById('laser1');
         if (laserPointer) {
+            // Platziere den Laserpointer in der Mitte des Bildschirms (vertikal) und rechts
             laserPointer.style.right = '60px';
-            // Vertikale Position zwischen den Spiegelreihen (etwa auf 20% der Höhe)
-            laserPointer.style.top = `${(topPositions[0].top + bottomPositions[0].top) / 2}px`;
-            // Passe den Rotationswinkel an, um weiter auf Spiegel 4 zu zielen
-            laserPointer.style.transform = 'rotate(-15deg)';
+            laserPointer.style.top = `${containerHeight / 2}px`;
+            laserPointer.style.transform = `translate(0, -50%)`;  // Zentriere vertikal
+
+            // Anpassung des Winkels, um den Laser auf den rechten oberen Spiegel zu richten
+            const verticalOffset = containerHeight / 2 - topPositions[3].top;
+            const horizontalDistance = containerWidth - 60 - topPositions[3].left;
+            const angle = Math.atan2(-verticalOffset, -horizontalDistance) * (180 / Math.PI);
+            laserPointer.style.transform = `translateY(-50%) rotate(${angle}deg)`;
         }
 
         // Positioniere das Prisma
