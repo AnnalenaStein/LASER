@@ -87,7 +87,7 @@ body {
     transform: rotateX(-45deg) rotateZ(2deg);
 }
 
-/* Laserpointer Styling - angepasst für die neue Position */
+/* Laserpointer Styling */
 .laser-pointer {
     width: 30px;
     height: 60px;
@@ -95,9 +95,9 @@ body {
     border: 1px solid #666;
     position: absolute;
     right: 60px;
+    top: 30%;
     border-radius: 5px;
     z-index: 3;
-    /* Die transform-Eigenschaft wird nun direkt in JavaScript gesetzt */
 }
 
 .laser-pointer:after {
@@ -186,10 +186,4 @@ button {
 
 button:hover {
     background-color: #3e8;
-}
-
-/* Vertikale Position zwischen den Spiegelreihen */
-.laser-pointer {
-    top: calc((40px + 40px) / 2);
-    transform: rotate(-15deg);
 }

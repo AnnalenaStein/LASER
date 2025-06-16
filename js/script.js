@@ -45,9 +45,9 @@ document.addEventListener('DOMContentLoaded', function () {
         // Berechne die Zwischenräume für die unteren Spiegel
         // Diese sollen zwischen den oberen Spiegeln platziert werden
         const bottomPositions = [
-            { left: containerWidth * 0.25, top: containerHeight * 0.3 }, // Zwischen Spiegel 1 und 2
-            { left: containerWidth * 0.45, top: containerHeight * 0.3 }, // Zwischen Spiegel 2 und 3
-            { left: containerWidth * 0.65, top: containerHeight * 0.3 }  // Zwischen Spiegel 3 und 4
+            { left: containerWidth * 0.30, top: containerHeight * 0.3 }, // Zwischen Spiegel 1 und 2
+            { left: containerWidth * 0.50, top: containerHeight * 0.3 }, // Zwischen Spiegel 2 und 3
+            { left: containerWidth * 0.10, top: containerHeight * 0.3 }  // Zwischen Spiegel 3 und 4
         ];
 
         const bottomMirrors = document.querySelectorAll('.bottom-mirrors .mirror');
