@@ -81,7 +81,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         // Spezielle Winkel für Spiegel 4, damit er auf Spiegel 5 (linken unteren) zielt
-        mirrorData['mirror4'].angle = 115; // Angepasster Winkel für Spiegel 4
+        mirrorData['mirror4'].angle = 160; // Angepasster Winkel für Spiegel 4
 
         // Wende die Rotationswinkel auf alle Spiegel an
         mirrors.forEach(mirror => {
