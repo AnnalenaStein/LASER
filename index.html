@@ -12,14 +12,14 @@
     <div class="container">
         <!-- Fixe Spiegel mit definierten Winkeln -->
         <div class="top-mirrors">
-            <div class="mirror fixed" id="mirror1" data-angle="90"></div>
-            <div class="mirror fixed" id="mirror2" data-angle="90"></div>
-            <div class="mirror fixed" id="mirror3" data-angle="90"></div>
-            <div class="mirror fixed" id="mirror4" data-angle="90"></div>
+            <div class="mirror fixed" id="mirror1" data-angle="180"></div>
+            <div class="mirror fixed" id="mirror2" data-angle="180"></div>
+            <div class="mirror fixed" id="mirror3" data-angle="180"></div>
+            <div class="mirror fixed" id="mirror4" data-angle="115"></div>
         </div>
 
         <div class="bottom-mirrors">
-            <div class="mirror fixed" id="mirror5" data-angle="-45"></div>
+            <div class="mirror fixed" id="mirror5" data-angle="180"></div>
             <!-- Drehbare Spiegel mit Steuerung -->
             <div class="mirror rotatable" id="mirror6" data-angle="-135"></div>
             <div class="mirror rotatable" id="mirror7" data-angle="-45"></div>
@@ -40,12 +40,12 @@
         <div class="controls-panel">
             <div class="control-group">
                 <label for="mirror6-angle">Spiegel 6 Winkel:</label>
-                <input type="range" id="mirror6-angle" min="-170" max="0" value="-135" step="5">
+                <input type="range" id="mirror6-angle" min="-170" max="0" value="-135" step="1">
                 <span id="mirror6-angle-value">-135°</span>
             </div>
             <div class="control-group">
                 <label for="mirror7-angle">Spiegel 7 Winkel:</label>
-                <input type="range" id="mirror7-angle" min="-90" max="90" value="-45" step="5">
+                <input type="range" id="mirror7-angle" min="-90" max="90" value="-45" step="1">
                 <span id="mirror7-angle-value">-45°</span>
             </div>
             <button id="reset-button">Zurücksetzen</button>
