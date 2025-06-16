@@ -1,0 +1,189 @@
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #000;
+    height: 100vh;
+    overflow: hidden;
+    font-family: Arial, sans-serif;
+}
+
+.container {
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+.top-mirrors {
+    display: flex;
+    justify-content: space-evenly;
+    width: 100%;
+    height: 40px;
+    padding: 30px 0;
+}
+
+.bottom-mirrors {
+    display: flex;
+    justify-content: space-evenly;
+    width: 80%;
+    /* Etwas schmaler als die obere Reihe */
+    height: 40px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    /* Zentrieren */
+    margin-left: 5%;
+    /* Verschiebung für die Positionierung zwischen den oberen Spiegeln */
+}
+
+/* Spiegel-Styling */
+.mirror {
+    width: 80px;
+    height: 10px;
+    background-color: white;
+    position: absolute;
+    box-shadow: 0 0 5px rgba(255, 255, 255, 0.7);
+    z-index: 2;
+}
+
+.mirror.rotatable {
+    border: 1px solid #4f9;
+    box-shadow: 0 0 8px rgba(79, 255, 153, 0.7);
+    cursor: pointer;
+    z-index: 5;
+}
+
+.mirror.rotatable:hover {
+    box-shadow: 0 0 12px rgba(79, 255, 153, 1);
+}
+
+/* Obere Spiegel mit angepassten Positionen */
+#mirror1 {
+    transform: rotateX(45deg) rotateZ(2deg);
+}
+
+#mirror2 {
+    transform: rotateX(45deg) rotateZ(-1deg);
+}
+
+#mirror3 {
+    transform: rotateX(45deg) rotateZ(1deg);
+}
+
+#mirror4 {
+    transform: rotateX(45deg) rotateZ(-2deg);
+}
+
+/* Untere Spiegel versetzt angeordnet */
+#mirror5 {
+    transform: rotateX(-45deg) rotateZ(1deg);
+}
+
+#mirror6 {
+    transform: rotateX(-45deg) rotateZ(-2deg);
+}
+
+#mirror7 {
+    transform: rotateX(-45deg) rotateZ(2deg);
+}
+
+/* Laserpointer Styling */
+.laser-pointer {
+    width: 30px;
+    height: 60px;
+    background-color: #444;
+    border: 1px solid #666;
+    position: absolute;
+    right: 60px;
+    top: 30%;
+    border-radius: 5px;
+    z-index: 3;
+}
+
+.laser-pointer:after {
+    content: '';
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background-color: red;
+    border-radius: 50%;
+    left: 10px;
+    top: 5px;
+}
+
+/* Prisma Styling */
+.prism {
+    width: 40px;
+    height: 70px;
+    position: absolute;
+    left: 60px;
+    top: 70%;
+    clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.8), rgba(100, 100, 255, 0.8), rgba(255, 100, 100, 0.8));
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+    z-index: 3;
+}
+
+/* Laserstrahl */
+.laser-beam {
+    position: absolute;
+    width: 2px;
+    background-color: rgba(255, 0, 0, 0.7);
+    box-shadow: 0 0 10px 2px rgba(255, 0, 0, 0.5);
+    z-index: 1;
+    transform-origin: top left;
+}
+
+/* Steuerungspanel */
+.controls-panel {
+    position: absolute;
+    bottom: 30px;
+    right: 30px;
+    width: 300px;
+    background-color: rgba(40, 40, 40, 0.8);
+    border-radius: 10px;
+    padding: 15px;
+    color: #fff;
+    z-index: 10;
+}
+
+.control-group {
+    margin-bottom: 15px;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+input[type="range"] {
+    width: 100%;
+    background: #555;
+    height: 10px;
+    outline: none;
+    border-radius: 5px;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #4f9;
+    cursor: pointer;
+}
+
+button {
+    padding: 8px 15px;
+    background-color: #4f9;
+    color: #000;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+button:hover {
+    background-color: #3e8;
+}

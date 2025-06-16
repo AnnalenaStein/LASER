@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laser Parcours Simulation</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <div class="container">
+        <!-- Fixe Spiegel -->
+        <div class="top-mirrors">
+            <div class="mirror fixed" id="mirror1" data-angle="45"></div>
+            <div class="mirror fixed" id="mirror2" data-angle="135"></div>
+            <div class="mirror fixed" id="mirror3" data-angle="45"></div>
+            <div class="mirror fixed" id="mirror4" data-angle="135"></div>
+        </div>
+
+        <div class="bottom-mirrors">
+            <div class="mirror fixed" id="mirror5" data-angle="-45"></div>
+            <!-- Drehbare Spiegel mit Steuerung -->
+            <div class="mirror rotatable" id="mirror6" data-angle="-135"></div>
+            <div class="mirror rotatable" id="mirror7" data-angle="-45"></div>
+        </div>
+
+        <!-- Laserpointer auf der rechten Seite -->
+        <div class="laser-pointer" id="laser1"></div>
+
+        <!-- Prisma auf der linken Seite -->
+        <div class="prism" id="prism1"></div>
+
+        <!-- Laser Strahlen Segmente -->
+        <div class="laser-beams" id="beams-container">
+            <!-- Hier werden die Laser-Segmente dynamisch eingefügt -->
+        </div>
+
+        <!-- Steuerungspanel -->
+        <div class="controls-panel">
+            <div class="control-group">
+                <label for="mirror6-angle">Spiegel 6 Winkel:</label>
+                <input type="range" id="mirror6-angle" min="-170" max="0" value="-135" step="5">
+                <span id="mirror6-angle-value">-135°</span>
+            </div>
+            <div class="control-group">
+                <label for="mirror7-angle">Spiegel 7 Winkel:</label>
+                <input type="range" id="mirror7-angle" min="-90" max="90" value="-45" step="5">
+                <span id="mirror7-angle-value">-45°</span>
+            </div>
+            <button id="reset-button">Zurücksetzen</button>
+        </div>
+    </div>
+
+    <script src="js/script.js"></script>
+</body>
+
+</html>
