@@ -87,7 +87,7 @@ body {
     transform: rotateX(-45deg) rotateZ(2deg);
 }
 
-@keyframes rainbow-glow {
+/* @keyframes rainbow-glow {
     0%   { box-shadow: 0 0 10px red; }
     25%  { box-shadow: 0 0 10px orange; }
     50%  { box-shadow: 0 0 10px lime; }
@@ -97,7 +97,7 @@ body {
 
 .prism.rainbow {
     animation: rainbow-glow 1s infinite;
-}
+} */
 
 
 /* Laserpointer Styling */
