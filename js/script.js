@@ -42,11 +42,12 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
 
-        // Bottom mirrors positioning (3 Spiegel unten, versetzt)
+        // Berechne die Zwischenräume für die unteren Spiegel
+        // Diese sollen zwischen den oberen Spiegeln platziert werden
         const bottomPositions = [
-            { left: containerWidth * 0.25, top: containerHeight * 0.5 },
-            { left: containerWidth * 0.45, top: containerHeight * 0.5 }, // Drehbar
-            { left: containerWidth * 0.65, top: containerHeight * 0.5 }  // Drehbar
+            { left: containerWidth * 0.25, top: containerHeight * 0.3 }, // Zwischen Spiegel 1 und 2
+            { left: containerWidth * 0.45, top: containerHeight * 0.3 }, // Zwischen Spiegel 2 und 3
+            { left: containerWidth * 0.65, top: containerHeight * 0.3 }  // Zwischen Spiegel 3 und 4
         ];
 
         const bottomMirrors = document.querySelectorAll('.bottom-mirrors .mirror');
@@ -57,11 +58,14 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
 
-        // Positioniere den Laserpointer
+        // Positioniere den Laserpointer zwischen den beiden Spiegelreihen vertial
         const laserPointer = document.getElementById('laser1');
         if (laserPointer) {
             laserPointer.style.right = '60px';
-            laserPointer.style.top = '30%';
+            // Vertikale Position zwischen den Spiegelreihen (etwa auf 20% der Höhe)
+            laserPointer.style.top = `${(topPositions[0].top + bottomPositions[0].top) / 2}px`;
+            // Passe den Rotationswinkel an, um weiter auf Spiegel 4 zu zielen
+            laserPointer.style.transform = 'rotate(-15deg)';
         }
 
         // Positioniere das Prisma
@@ -70,6 +74,9 @@ document.addEventListener('DOMContentLoaded', function () {
             prism.style.left = '60px';
             prism.style.top = '70%';
         }
+
+        // Spezielle Winkel für Spiegel 4, damit er auf Spiegel 5 (linken unteren) zielt
+        mirrorData['mirror4'].angle = 115; // Angepasster Winkel für Spiegel 4
 
         // Wende die Rotationswinkel auf alle Spiegel an
         mirrors.forEach(mirror => {
@@ -87,30 +94,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    // Laserstrahl ausrichten auf den ersten Spiegel der oberen Reihe
-    function adjustLaserBeam() {
-        const laser = document.getElementById('laser1');
-        const mirror1 = document.getElementById('mirror1');
-        const beam = document.getElementById('beam1');
-
-        if (laser && mirror1 && beam) {
-            const laserRect = laser.getBoundingClientRect();
-            const mirrorRect = mirror1.getBoundingClientRect();
-
-            // Berechne Winkel und Distanz zwischen Laser und Spiegel
-            const dx = mirrorRect.left + mirrorRect.width / 2 - (laserRect.left + 15);
-            const dy = mirrorRect.top + mirrorRect.height / 2 - (laserRect.top + 30);
-            const distance = Math.sqrt(dx * dx + dy * dy);
-            const angle = Math.atan2(dy, dx) * (180 / Math.PI);
-
-            // Setze Länge und Winkel des Laserstrahls
-            beam.style.height = `${distance}px`;
-            beam.style.transform = `rotate(${angle}deg)`;
-            beam.style.top = `${laserRect.top + 30 - window.scrollY}px`;
-            beam.style.right = `${window.innerWidth - laserRect.left - 15}px`;
-        }
-    }
-
     // Calculate and draw laser path
     function calculateLaserPath() {
         // Entferne vorhandene Laserstrahlen
@@ -125,8 +108,22 @@ document.addEventListener('DOMContentLoaded', function () {
             y: laserRect.top + laserRect.height / 2
         };
 
-        // Initiale Richtung des Lasers (nach links)
-        let direction = { x: -1, y: 0 };
+        // Initiale Richtung des Lasers - zum rechten oberen Spiegel (#mirror4)
+        const targetMirror = document.getElementById('mirror4');
+        const targetRect = targetMirror.getBoundingClientRect();
+        const targetCenter = {
+            x: targetRect.left + targetRect.width / 2,
+            y: targetRect.top + targetRect.height / 2
+        };
+
+        const dx = targetCenter.x - start.x;
+        const dy = targetCenter.y - start.y;
+        const magnitude = Math.sqrt(dx * dx + dy * dy);
+
+        let direction = {
+            x: dx / magnitude,
+            y: dy / magnitude
+        };
 
         // Erstelle Segmente, bis der Laser den Bildschirm verlässt oder das Prisma trifft
         let pathComplete = false;
@@ -157,7 +154,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             } else {
                 // Kein Schnittpunkt gefunden, Laser verlässt den Bildschirm
-                // Zeichne ein letztes Segment bis zum Rand
                 const screenEnd = extrapolateToScreenEdge(start, direction);
                 drawLaserSegment(start, screenEnd);
                 pathComplete = true;
