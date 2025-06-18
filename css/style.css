@@ -152,12 +152,15 @@ body {
     position: absolute;
     bottom: 30px;
     right: 30px;
-    width: 300px;
-    background-color: rgba(40, 40, 40, 0.8);
+    width: 320px;
+    max-height: 70vh;
+    overflow-y: auto;
+    background-color: rgba(40, 40, 40, 0.9);
     border-radius: 10px;
     padding: 15px;
     color: #fff;
     z-index: 10;
+    backdrop-filter: blur(5px);
 }
 
 .control-group {
@@ -199,4 +202,64 @@ button {
 
 button:hover {
     background-color: #3e8;
+}
+
+button:disabled {
+    background-color: #666;
+    color: #999;
+    cursor: not-allowed;
+}
+
+button:disabled:hover {
+    background-color: #666;
+}
+
+/* Web Serial specific styles */
+select {
+    width: 100%;
+    padding: 5px;
+    background-color: #555;
+    color: #fff;
+    border: 1px solid #777;
+    border-radius: 5px;
+    outline: none;
+}
+
+select:focus {
+    border-color: #4f9;
+}
+
+#connection-status {
+    font-size: 12px;
+    margin-top: 5px;
+    padding: 5px;
+    border-radius: 3px;
+    text-align: center;
+}
+
+#connection-status.connected {
+    background-color: rgba(79, 255, 153, 0.3);
+    color: #4f9;
+}
+
+#connection-status.disconnected {
+    background-color: rgba(255, 79, 79, 0.3);
+    color: #f94;
+}
+
+#esp-data-group div {
+    font-size: 12px;
+    margin: 2px 0;
+    padding: 3px 5px;
+    background-color: rgba(0, 0, 0, 0.3);
+    border-radius: 3px;
+}
+
+#esp-raw-value {
+    color: #aaa;
+}
+
+#esp-mapped-value {
+    color: #4f9;
+    font-weight: bold;
 }

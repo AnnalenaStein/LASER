@@ -38,6 +38,25 @@
 
         <!-- Steuerungspanel nur für die drehbaren Spiegel -->
         <div class="controls-panel">
+            <!-- Web Serial Controls -->
+            <div class="control-group">
+                <label>ESP Verbindung:</label>
+                <button id="connect-button">ESP Verbinden</button>
+                <button id="disconnect-button" disabled>Trennen</button>
+                <div id="connection-status">Nicht verbunden</div>
+            </div>
+            
+            <!-- ESP Control Mode Selection -->
+            <div class="control-group">
+                <label>Steuerungsmodus:</label>
+                <select id="control-mode">
+                    <option value="manual">Manuell (Slider)</option>
+                    <option value="esp-mirror6">ESP → Spiegel 6</option>
+                    <option value="esp-mirror7">ESP → Spiegel 7</option>
+                    <option value="esp-both">ESP → Beide Spiegel</option>
+                </select>
+            </div>
+
             <div class="control-group">
                 <label for="mirror6-angle">Spiegel 6 Winkel:</label>
                 <input type="range" id="mirror6-angle" min="-170" max="0" value="-135" step="1">
@@ -48,6 +67,14 @@
                 <input type="range" id="mirror7-angle" min="-90" max="90" value="-45" step="1">
                 <span id="mirror7-angle-value">-45°</span>
             </div>
+            
+            <!-- ESP Data Display -->
+            <div class="control-group" id="esp-data-group" style="display: none;">
+                <label>ESP Daten:</label>
+                <div id="esp-raw-value">Roh: -</div>
+                <div id="esp-mapped-value">Winkel: -</div>
+            </div>
+            
             <button id="reset-button">Zurücksetzen</button>
         </div>
     </div>
