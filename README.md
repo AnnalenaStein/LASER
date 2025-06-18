@@ -22,14 +22,14 @@ Die Web Serial API wird unterstützt von:
 
 **Hinweis**: Firefox unterstützt die Web Serial API noch nicht.
 
-## ESP32/ESP8266 Code
+## Arduino Code
 
-Hier ist der Arduino-Code für Ihren ESP mit **zwei Potentiometern** zur Steuerung beider Spiegel:
+Hier ist der Arduino-Code für Ihren **Arduino** mit **zwei Potentiometern** zur Steuerung beider Spiegel:
 
 ```cpp
-// ESP32/ESP8266 Code für Dual-Potentiometer-Steuerung
-const int POTI0_PIN = A0;  // Potentiometer für Spiegel 6 (-170° bis 0°)
-const int POTI1_PIN = A1;  // Potentiometer für Spiegel 7 (-90° bis +90°)
+// Arduino Code für Dual-Potentiometer-Steuerung
+const int POTI0_PIN = A0;  // Potentiometer für Spiegel 6 (0° bis 360°)
+const int POTI1_PIN = A1;  // Potentiometer für Spiegel 7 (0° bis 360°)
 
 unsigned long lastSend = 0;
 const int SEND_INTERVAL = 50; // Sende alle 50ms (20Hz)
@@ -44,9 +44,9 @@ void setup() {
     delay(10);
   }
   
-  Serial.println("ESP Dual Potentiometer Controller gestartet");
-  Serial.println("Poti0 (A0) -> Spiegel 6 (-170° bis 0°)");
-  Serial.println("Poti1 (A1) -> Spiegel 7 (-90° bis +90°)");
+  Serial.println("Arduino Dual Potentiometer Controller gestartet");
+  Serial.println("Poti0 (A0) -> Spiegel 6 (0° bis 360°)");
+  Serial.println("Poti1 (A1) -> Spiegel 7 (0° bis 360°)");
 }
 
 void loop() {
@@ -103,32 +103,33 @@ void testPoti1Only() {
 1. **Zwei Potentiometer anschließen**:
    
    **Potentiometer 1 (Spiegel 6):**
-   - VCC → 3.3V (ESP32/ESP8266)
+   - VCC → 5V (Arduino)
    - GND → GND
-   - Wiper (mittlerer Pin) → A0 (ESP8266) oder GPIO 36 (ESP32)
+   - Wiper (mittlerer Pin) → A0
    
    **Potentiometer 2 (Spiegel 7):**
-   - VCC → 3.3V (ESP32/ESP8266)
+   - VCC → 5V (Arduino)
    - GND → GND
-   - Wiper (mittlerer Pin) → A1 (ESP8266) oder GPIO 39 (ESP32)
+   - Wiper (mittlerer Pin) → A1
 
 2. **Wertebereiche der Potentiometer**:
    - **Poti 0 (A0)**: Steuert Spiegel 6 von 0° bis 360°
    - **Poti 1 (A1)**: Steuert Spiegel 7 von 0° bis 360°
+   - **Arduino ADC**: 0-1023 (10-bit)
    - **Eine Potentiometer-Umdrehung = Eine Spiegel-Umdrehung (360°)**
    - Beide Potentiometer nutzen den vollen 360° Drehbereich
 
-3. **ESP programmieren**:
+3. **Arduino programmieren**:
    - Arduino IDE verwenden
-   - Entsprechende Board-Unterstützung installieren
+   - Arduino Uno/Nano/Mega Board wählen
    - Code hochladen
 
 ## Verwendung
 
 1. **Browser öffnen**: Chrome, Edge oder Opera verwenden
-2. **ESP verbinden**: USB-Kabel zwischen ESP und Computer
+2. **Arduino verbinden**: USB-Kabel zwischen Arduino und Computer
 3. **Webseite laden**: `index.html` öffnen
-4. **ESP verbinden**: 
+4. **Arduino verbinden**: 
    - "ESP Verbinden" Button klicken
    - Entsprechenden COM-Port auswählen
 5. **Steuerungsmodus wählen**:
@@ -138,31 +139,31 @@ void testPoti1Only() {
 
 ## Datenformate
 
-Der ESP sendet Daten für beide Potentiometer in folgenden Formaten:
+Der Arduino sendet Daten für beide Potentiometer in folgenden Formaten:
 
 ### Dual-Potentiometer Format (Standard)
 ```
-poti0:1023,poti1:2048
-poti0:512,poti1:3500
-poti0:4095,poti1:0
+poti0:512,poti1:1023
+poti0:256,poti1:768
+poti0:1023,poti1:0
 ```
 
 ### JSON Format (Alternative)
 ```json
-{"poti0":1023,"poti1":2048}
-{"poti0":512,"poti1":3500}
-{"poti0":4095,"poti1":0}
+{"poti0":512,"poti1":1023}
+{"poti0":256,"poti1":768}
+{"poti0":1023,"poti1":0}
 ```
 
 ### Einzelne Potentiometer (zum Testen)
 ```
-poti0:1023
-poti1:2048
+poti0:512
+poti1:1023
 ```
 
 ## Wertebereiche
 
-- **ESP ADC**: 0-4095 (12-bit)
+- **Arduino ADC**: 0-1023 (10-bit)
 - **Spiegel 6**: 0° bis 360° (volle Umdrehung)
 - **Spiegel 7**: 0° bis 360° (volle Umdrehung)
 
@@ -170,10 +171,10 @@ poti1:2048
 
 ## Troubleshooting
 
-### ESP wird nicht erkannt
+### Arduino wird nicht erkannt
 - Überprüfen Sie die USB-Verbindung
 - Stellen Sie sicher, dass der richtige COM-Port ausgewählt ist
-- ESP-Treiber installieren (falls nötig)
+- Arduino-Treiber installieren (falls nötig)
 
 ### Browser-Unterstützung
 - Verwenden Sie Chrome, Edge oder Opera

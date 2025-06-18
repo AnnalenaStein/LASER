@@ -679,15 +679,15 @@ document.addEventListener('DOMContentLoaded', function () {
     // Mapping-Funktionen für die verschiedenen Winkelbereiche
     // Eine Poti-Umdrehung = Eine Spiegel-Umdrehung (360°)
     function mapValueToMirror6Range(rawValue) {
-        // ESP Wert (0-4095) direkt auf 360° mappen
-        const normalizedValue = Math.max(0, Math.min(4095, rawValue));
-        return Math.round((normalizedValue / 4095) * 360);
+        // Arduino Wert (0-1023) direkt auf 360° mappen
+        const normalizedValue = Math.max(0, Math.min(1023, rawValue));
+        return Math.round((normalizedValue / 1023) * 360);
     }
 
     function mapValueToMirror7Range(rawValue) {
-        // ESP Wert (0-4095) direkt auf 360° mappen
-        const normalizedValue = Math.max(0, Math.min(4095, rawValue));
-        return Math.round((normalizedValue / 4095) * 360);
+        // Arduino Wert (0-1023) direkt auf 360° mappen
+        const normalizedValue = Math.max(0, Math.min(1023, rawValue));
+        return Math.round((normalizedValue / 1023) * 360);
     }
 
     // Hilfsfunktionen um Spiegel zu setzen
