@@ -24,39 +24,49 @@ Die Web Serial API wird unterstützt von:
 
 ## ESP32/ESP8266 Code
 
-Hier ist ein einfacher Arduino-Code für Ihren ESP, um Potentiometer-Werte zu senden:
+Hier ist der Arduino-Code für Ihren ESP mit **zwei Potentiometern** zur Steuerung beider Spiegel:
 
 ```cpp
-// ESP32/ESP8266 Code für Potentiometer-Steuerung
-const int POTI_PIN = A0;  // Für ESP8266 oder GPIO 36 für ESP32
+// ESP32/ESP8266 Code für Dual-Potentiometer-Steuerung
+const int POTI0_PIN = A0;  // Potentiometer für Spiegel 6 (-170° bis 0°)
+const int POTI1_PIN = A1;  // Potentiometer für Spiegel 7 (-90° bis +90°)
+
 unsigned long lastSend = 0;
 const int SEND_INTERVAL = 50; // Sende alle 50ms (20Hz)
 
 void setup() {
   Serial.begin(115200);
-  pinMode(POTI_PIN, INPUT);
+  pinMode(POTI0_PIN, INPUT);
+  pinMode(POTI1_PIN, INPUT);
   
   // Warte auf Serial Verbindung
   while (!Serial) {
     delay(10);
   }
   
-  Serial.println("ESP Potentiometer Controller gestartet");
+  Serial.println("ESP Dual Potentiometer Controller gestartet");
+  Serial.println("Poti0 (A0) -> Spiegel 6 (-170° bis 0°)");
+  Serial.println("Poti1 (A1) -> Spiegel 7 (-90° bis +90°)");
 }
 
 void loop() {
   unsigned long currentTime = millis();
   
   if (currentTime - lastSend >= SEND_INTERVAL) {
-    int potiValue = analogRead(POTI_PIN);
+    int poti0Value = analogRead(POTI0_PIN);
+    int poti1Value = analogRead(POTI1_PIN);
     
-    // Sende in einfachem Format
-    Serial.print("poti:");
-    Serial.println(potiValue);
+    // Sende beide Werte im Format: "poti0:value,poti1:value"
+    Serial.print("poti0:");
+    Serial.print(poti0Value);
+    Serial.print(",poti1:");
+    Serial.println(poti1Value);
     
-    // Alternativ: JSON Format
-    // Serial.print("{\"poti\":");
-    // Serial.print(potiValue);
+    // Alternativ: JSON Format (auskommentiert)
+    // Serial.print("{\"poti0\":");
+    // Serial.print(poti0Value);
+    // Serial.print(",\"poti1\":");
+    // Serial.print(poti1Value);
     // Serial.println("}");
     
     lastSend = currentTime;
@@ -66,14 +76,48 @@ void loop() {
 }
 ```
 
+### Einzelne Potentiometer-Tests
+
+Falls Sie die Potentiometer einzeln testen möchten:
+
+```cpp
+// Test nur Poti0 (Spiegel 6)
+void testPoti0Only() {
+  int poti0Value = analogRead(POTI0_PIN);
+  Serial.print("poti0:");
+  Serial.println(poti0Value);
+  delay(100);
+}
+
+// Test nur Poti1 (Spiegel 7)  
+void testPoti1Only() {
+  int poti1Value = analogRead(POTI1_PIN);
+  Serial.print("poti1:");
+  Serial.println(poti1Value);
+  delay(100);
+}
+```
+
 ## Hardware Setup
 
-1. **Potentiometer anschließen**:
+1. **Zwei Potentiometer anschließen**:
+   
+   **Potentiometer 1 (Spiegel 6):**
    - VCC → 3.3V (ESP32/ESP8266)
    - GND → GND
    - Wiper (mittlerer Pin) → A0 (ESP8266) oder GPIO 36 (ESP32)
+   
+   **Potentiometer 2 (Spiegel 7):**
+   - VCC → 3.3V (ESP32/ESP8266)
+   - GND → GND
+   - Wiper (mittlerer Pin) → A1 (ESP8266) oder GPIO 39 (ESP32)
 
-2. **ESP programmieren**:
+2. **Wertebereiche der Potentiometer**:
+   - **Poti 0 (A0)**: Steuert Spiegel 6 von -170° bis 0°
+   - **Poti 1 (A1)**: Steuert Spiegel 7 von -90° bis +90°
+   - Beide Potentiometer haben ca. 270° Drehbereich (3/4 Umdrehung)
+
+3. **ESP programmieren**:
    - Arduino IDE verwenden
    - Entsprechende Board-Unterstützung installieren
    - Code hochladen
@@ -93,27 +137,26 @@ void loop() {
 
 ## Datenformate
 
-Der ESP kann Daten in verschiedenen Formaten senden:
+Der ESP sendet Daten für beide Potentiometer in folgenden Formaten:
 
-### Einfaches Format
+### Dual-Potentiometer Format (Standard)
 ```
-poti:1023
-poti:2048
-poti:4095
+poti0:1023,poti1:2048
+poti0:512,poti1:3500
+poti0:4095,poti1:0
 ```
 
-### JSON Format  
+### JSON Format (Alternative)
 ```json
-{"poti":1023}
-{"value":2048}
-{"angle":4095}
+{"poti0":1023,"poti1":2048}
+{"poti0":512,"poti1":3500}
+{"poti0":4095,"poti1":0}
 ```
 
-### Nur Wert
+### Einzelne Potentiometer (zum Testen)
 ```
-1023
-2048
-4095
+poti0:1023
+poti1:2048
 ```
 
 ## Wertebereiche

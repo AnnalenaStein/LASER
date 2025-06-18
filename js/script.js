@@ -587,88 +587,92 @@ document.addEventListener('DOMContentLoaded', function () {
     // ESP Daten verarbeiten
     function processESPData(data) {
         try {
-            // Erwartetes Format: "poti:1023" oder JSON: {"poti":1023}
-            let rawValue;
-
+            // Erwartetes Format für zwei Potis: "poti0:1023,poti1:2048" oder JSON: {"poti0":1023,"poti1":2048}
+            let poti0Value = null;
+            let poti1Value = null;
+            
             if (data.startsWith('{')) {
                 // JSON Format
                 const parsed = JSON.parse(data);
-                rawValue = parsed.poti || parsed.value || parsed.angle;
+                poti0Value = parsed.poti0 || parsed.mirror6;
+                poti1Value = parsed.poti1 || parsed.mirror7;
+            } else if (data.includes(',')) {
+                // Format: "poti0:1023,poti1:2048"
+                const parts = data.split(',');
+                parts.forEach(part => {
+                    if (part.includes(':')) {
+                        const [key, value] = part.split(':');
+                        if (key.trim() === 'poti0') poti0Value = parseInt(value);
+                        if (key.trim() === 'poti1') poti1Value = parseInt(value);
+                    }
+                });
             } else if (data.includes(':')) {
-                // Einfaches Format "poti:value"
+                // Einzelner Wert "poti0:value" oder "poti1:value"
                 const parts = data.split(':');
-                rawValue = parseInt(parts[1]);
-            } else {
-                // Nur der Wert
-                rawValue = parseInt(data);
+                const key = parts[0].trim();
+                const value = parseInt(parts[1]);
+                if (key === 'poti0') poti0Value = value;
+                if (key === 'poti1') poti1Value = value;
             }
-
-            if (!isNaN(rawValue)) {
-                updateESPDisplay(rawValue);
-                applyESPControlToMirrors(rawValue);
+            
+            // Verarbeite die Werte
+            if (poti0Value !== null && !isNaN(poti0Value)) {
+                updateESPDisplay(poti0Value, poti1Value);
+                applyESPControlToMirrors(poti0Value, poti1Value);
+            } else if (poti1Value !== null && !isNaN(poti1Value)) {
+                updateESPDisplay(poti0Value, poti1Value);
+                applyESPControlToMirrors(poti0Value, poti1Value);
             }
-
+            
         } catch (error) {
             console.error('Fehler beim Verarbeiten der ESP Daten:', error);
         }
     }
 
     // ESP Anzeige aktualisieren
-    function updateESPDisplay(rawValue) {
-        espRawValue.textContent = `Roh: ${rawValue}`;
-
-        // Je nach Steuerungsmodus verschiedene Mappings
-        let mappedAngle;
-        switch (currentControlMode) {
-            case 'esp-mirror6':
-                mappedAngle = mapValueToMirror6Range(rawValue);
-                break;
-            case 'esp-mirror7':
-                mappedAngle = mapValueToMirror7Range(rawValue);
-                break;
-            case 'esp-both':
-                mappedAngle = mapValueToMirror6Range(rawValue); // Für Anzeige
-                break;
-            default:
-                mappedAngle = rawValue;
+    function updateESPDisplay(poti0Value, poti1Value) {
+        let displayText = 'Roh: ';
+        if (poti0Value !== null) displayText += `Poti0:${poti0Value}`;
+        if (poti1Value !== null) {
+            if (poti0Value !== null) displayText += ', ';
+            displayText += `Poti1:${poti1Value}`;
         }
+        espRawValue.textContent = displayText;
 
-        espMappedValue.textContent = `Winkel: ${mappedAngle}°`;
+        // Zeige gemappte Winkel für beide Potis
+        let mappedText = 'Winkel: ';
+        if (poti0Value !== null) {
+            const angle6 = mapValueToMirror6Range(poti0Value);
+            mappedText += `S6:${angle6}°`;
+        }
+        if (poti1Value !== null) {
+            if (poti0Value !== null) mappedText += ', ';
+            const angle7 = mapValueToMirror7Range(poti1Value);
+            mappedText += `S7:${angle7}°`;
+        }
+        espMappedValue.textContent = mappedText;
     }
 
     // ESP Steuerung auf Spiegel anwenden
-    function applyESPControlToMirrors(rawValue) {
-        console.log(`applyESPControlToMirrors: rawValue=${rawValue}, mode=${currentControlMode}`);
+    function applyESPControlToMirrors(poti0Value, poti1Value) {
+        console.log(`applyESPControlToMirrors: poti0=${poti0Value}, poti1=${poti1Value}, mode=${currentControlMode}`);
 
         if (currentControlMode === 'manual') {
             console.log('Mode is manual, returning');
             return;
         }
 
-        switch (currentControlMode) {
-            case 'esp-mirror6':
-                const angle6 = mapValueToMirror6Range(rawValue);
-                console.log(`Setting Mirror 6 to angle: ${angle6}`);
-                setMirror6Angle(angle6);
-                break;
+        // Immer beide Spiegel direkt mit ihren entsprechenden Potis steuern
+        if (poti0Value !== null && !isNaN(poti0Value)) {
+            const angle6 = mapValueToMirror6Range(poti0Value);
+            console.log(`Setting Mirror 6 to angle: ${angle6} (from poti0: ${poti0Value})`);
+            setMirror6Angle(angle6);
+        }
 
-            case 'esp-mirror7':
-                const angle7 = mapValueToMirror7Range(rawValue);
-                console.log(`Setting Mirror 7 to angle: ${angle7}`);
-                setMirror7Angle(angle7);
-                break;
-
-            case 'esp-both':
-                // Beide Spiegel mit unterschiedlichen Mappings
-                const angle6Both = mapValueToMirror6Range(rawValue);
-                const angle7Both = mapValueToMirror7Range(rawValue);
-                console.log(`Setting both mirrors - Mirror 6: ${angle6Both}, Mirror 7: ${angle7Both}`);
-                setMirror6Angle(angle6Both);
-                setMirror7Angle(angle7Both);
-                break;
-
-            default:
-                console.log(`Unknown control mode: ${currentControlMode}`);
+        if (poti1Value !== null && !isNaN(poti1Value)) {
+            const angle7 = mapValueToMirror7Range(poti1Value);
+            console.log(`Setting Mirror 7 to angle: ${angle7} (from poti1: ${poti1Value})`);
+            setMirror7Angle(angle7);
         }
     }
 
