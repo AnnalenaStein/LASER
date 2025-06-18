@@ -113,9 +113,10 @@ void testPoti1Only() {
    - Wiper (mittlerer Pin) → A1 (ESP8266) oder GPIO 39 (ESP32)
 
 2. **Wertebereiche der Potentiometer**:
-   - **Poti 0 (A0)**: Steuert Spiegel 6 von -170° bis 0°
-   - **Poti 1 (A1)**: Steuert Spiegel 7 von -90° bis +90°
-   - Beide Potentiometer haben ca. 270° Drehbereich (3/4 Umdrehung)
+   - **Poti 0 (A0)**: Steuert Spiegel 6 von 0° bis 360°
+   - **Poti 1 (A1)**: Steuert Spiegel 7 von 0° bis 360°
+   - **Eine Potentiometer-Umdrehung = Eine Spiegel-Umdrehung (360°)**
+   - Beide Potentiometer nutzen den vollen 360° Drehbereich
 
 3. **ESP programmieren**:
    - Arduino IDE verwenden
@@ -162,10 +163,10 @@ poti1:2048
 ## Wertebereiche
 
 - **ESP ADC**: 0-4095 (12-bit)
-- **Spiegel 6**: -170° bis 0°
-- **Spiegel 7**: -90° bis 90°
+- **Spiegel 6**: 0° bis 360° (volle Umdrehung)
+- **Spiegel 7**: 0° bis 360° (volle Umdrehung)
 
-Die Werte werden automatisch zwischen den Bereichen gemappt.
+**1:1 Mapping**: Eine Potentiometer-Umdrehung entspricht einer Spiegel-Umdrehung (360°).
 
 ## Troubleshooting
 

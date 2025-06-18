@@ -677,21 +677,23 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // Mapping-Funktionen für die verschiedenen Winkelbereiche
+    // Eine Poti-Umdrehung = Eine Spiegel-Umdrehung (360°)
     function mapValueToMirror6Range(rawValue) {
-        // ESP Wert (normalerweise 0-4095 für 12-bit ADC) auf Mirror6 Bereich (-170 bis 0) mappen
+        // ESP Wert (0-4095) direkt auf 360° mappen
         const normalizedValue = Math.max(0, Math.min(4095, rawValue));
-        return Math.round(-170 + (normalizedValue / 4095) * 170);
+        return Math.round((normalizedValue / 4095) * 360);
     }
 
     function mapValueToMirror7Range(rawValue) {
-        // ESP Wert auf Mirror7 Bereich (-90 bis 90) mappen
+        // ESP Wert (0-4095) direkt auf 360° mappen
         const normalizedValue = Math.max(0, Math.min(4095, rawValue));
-        return Math.round(-90 + (normalizedValue / 4095) * 180);
+        return Math.round((normalizedValue / 4095) * 360);
     }
 
     // Hilfsfunktionen um Spiegel zu setzen
     function setMirror6Angle(angle) {
-        angle = Math.max(-170, Math.min(0, angle));
+        // Normalisiere Winkel auf 0-360° Bereich
+        angle = ((angle % 360) + 360) % 360;
         mirror6Slider.value = angle;
         mirror6Value.textContent = `${angle}°`;
         applyMirrorAngle(document.getElementById('mirror6'), angle);
@@ -699,7 +701,8 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function setMirror7Angle(angle) {
-        angle = Math.max(-90, Math.min(90, angle));
+        // Normalisiere Winkel auf 0-360° Bereich
+        angle = ((angle % 360) + 360) % 360;
         mirror7Slider.value = angle;
         mirror7Value.textContent = `${angle}°`;
         applyMirrorAngle(document.getElementById('mirror7'), angle);
@@ -742,12 +745,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Reset-Button
     resetButton.addEventListener('click', function () {
-        mirror6Slider.value = -135;
-        mirror7Slider.value = -45;
-        mirror6Value.textContent = '-135°';
-        mirror7Value.textContent = '-45°';
-        applyMirrorAngle(document.getElementById('mirror6'), -135);
-        applyMirrorAngle(document.getElementById('mirror7'), -45);
+        mirror6Slider.value = 180;
+        mirror7Slider.value = 180;
+        mirror6Value.textContent = '180°';
+        mirror7Value.textContent = '180°';
+        applyMirrorAngle(document.getElementById('mirror6'), 180);
+        applyMirrorAngle(document.getElementById('mirror7'), 180);
         calculateLaserPath();
     });
 
