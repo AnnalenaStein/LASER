@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const mirror6Value = document.getElementById('mirror6-angle-value');
     const mirror7Value = document.getElementById('mirror7-angle-value');
     const resetButton = document.getElementById('reset-button');
-    
+
     // Web Serial Elemente
     const connectButton = document.getElementById('connect-button');
     const disconnectButton = document.getElementById('disconnect-button');
@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const espDataGroup = document.getElementById('esp-data-group');
     const espRawValue = document.getElementById('esp-raw-value');
     const espMappedValue = document.getElementById('esp-mapped-value');
-    
+
     // Web Serial Variablen
     let port = null;
     let reader = null;
@@ -108,7 +108,16 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Wende einen Rotationswinkel auf einen Spiegel an
     function applyMirrorAngle(mirror, angle) {
-        mirror.style.transform = `rotate(${angle}deg)`;
+        // Für die rotierbaren Spiegel müssen wir die bestehende CSS Transform berücksichtigen
+        if (mirror.id === 'mirror6') {
+            mirror.style.transform = `rotateX(-45deg) rotateZ(-2deg) rotate(${angle}deg)`;
+        } else if (mirror.id === 'mirror7') {
+            mirror.style.transform = `rotateX(-45deg) rotateZ(2deg) rotate(${angle}deg)`;
+        } else {
+            // Für andere Spiegel, behalte den normalen Rotate
+            mirror.style.transform = `rotate(${angle}deg)`;
+        }
+
         if (mirrorData[mirror.id]) {
             mirrorData[mirror.id].angle = angle;
         }
@@ -458,7 +467,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // ==================== WEB SERIAL API FUNKTIONEN ====================
-    
+
     // Prüfe ob Web Serial API verfügbar ist
     function checkWebSerialSupport() {
         if (!('serial' in navigator)) {
@@ -474,16 +483,16 @@ document.addEventListener('DOMContentLoaded', function () {
         try {
             // Bitte um Auswahl eines seriellen Ports
             port = await navigator.serial.requestPort();
-            
+
             // Port öffnen mit 115200 Baud Rate (Standard für ESP32/ESP8266)
             await port.open({ baudRate: 115200 });
-            
+
             isConnected = true;
             updateConnectionStatus('connected');
-            
+
             // Startet das Lesen der Daten
             startReading();
-            
+
         } catch (error) {
             console.error('Fehler beim Verbinden:', error);
             updateConnectionStatus('error');
@@ -502,15 +511,15 @@ document.addEventListener('DOMContentLoaded', function () {
                 await reader.cancel();
                 reader = null;
             }
-            
+
             if (port) {
                 await port.close();
                 port = null;
             }
-            
+
             isConnected = false;
             updateConnectionStatus('disconnected');
-            
+
         } catch (error) {
             console.error('Fehler beim Trennen:', error);
         }
@@ -521,7 +530,7 @@ document.addEventListener('DOMContentLoaded', function () {
         connectionStatus.className = status;
         connectButton.disabled = isConnected;
         disconnectButton.disabled = !isConnected;
-        
+
         switch (status) {
             case 'connected':
                 connectionStatus.textContent = 'Verbunden';
@@ -543,19 +552,19 @@ document.addEventListener('DOMContentLoaded', function () {
         try {
             reader = port.readable.getReader();
             let buffer = '';
-            
+
             while (isConnected) {
                 const { value, done } = await reader.read();
                 if (done) break;
-                
+
                 // Konvertiere Uint8Array zu String
                 const chunk = new TextDecoder().decode(value);
                 buffer += chunk;
-                
+
                 // Verarbeite komplette Zeilen (getrennt durch \n)
                 let lines = buffer.split('\n');
                 buffer = lines.pop(); // Behalte unvollständige Zeile im Buffer
-                
+
                 for (let line of lines) {
                     if (line.trim()) {
                         processESPData(line.trim());
@@ -580,7 +589,7 @@ document.addEventListener('DOMContentLoaded', function () {
         try {
             // Erwartetes Format: "poti:1023" oder JSON: {"poti":1023}
             let rawValue;
-            
+
             if (data.startsWith('{')) {
                 // JSON Format
                 const parsed = JSON.parse(data);
@@ -593,12 +602,12 @@ document.addEventListener('DOMContentLoaded', function () {
                 // Nur der Wert
                 rawValue = parseInt(data);
             }
-            
+
             if (!isNaN(rawValue)) {
                 updateESPDisplay(rawValue);
                 applyESPControlToMirrors(rawValue);
             }
-            
+
         } catch (error) {
             console.error('Fehler beim Verarbeiten der ESP Daten:', error);
         }
@@ -607,7 +616,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // ESP Anzeige aktualisieren
     function updateESPDisplay(rawValue) {
         espRawValue.textContent = `Roh: ${rawValue}`;
-        
+
         // Je nach Steuerungsmodus verschiedene Mappings
         let mappedAngle;
         switch (currentControlMode) {
@@ -623,32 +632,43 @@ document.addEventListener('DOMContentLoaded', function () {
             default:
                 mappedAngle = rawValue;
         }
-        
+
         espMappedValue.textContent = `Winkel: ${mappedAngle}°`;
     }
 
     // ESP Steuerung auf Spiegel anwenden
     function applyESPControlToMirrors(rawValue) {
-        if (currentControlMode === 'manual') return;
-        
+        console.log(`applyESPControlToMirrors: rawValue=${rawValue}, mode=${currentControlMode}`);
+
+        if (currentControlMode === 'manual') {
+            console.log('Mode is manual, returning');
+            return;
+        }
+
         switch (currentControlMode) {
             case 'esp-mirror6':
                 const angle6 = mapValueToMirror6Range(rawValue);
+                console.log(`Setting Mirror 6 to angle: ${angle6}`);
                 setMirror6Angle(angle6);
                 break;
-                
+
             case 'esp-mirror7':
                 const angle7 = mapValueToMirror7Range(rawValue);
+                console.log(`Setting Mirror 7 to angle: ${angle7}`);
                 setMirror7Angle(angle7);
                 break;
-                
+
             case 'esp-both':
                 // Beide Spiegel mit unterschiedlichen Mappings
                 const angle6Both = mapValueToMirror6Range(rawValue);
                 const angle7Both = mapValueToMirror7Range(rawValue);
+                console.log(`Setting both mirrors - Mirror 6: ${angle6Both}, Mirror 7: ${angle7Both}`);
                 setMirror6Angle(angle6Both);
                 setMirror7Angle(angle7Both);
                 break;
+
+            default:
+                console.log(`Unknown control mode: ${currentControlMode}`);
         }
     }
 
@@ -687,10 +707,10 @@ document.addEventListener('DOMContentLoaded', function () {
     // Web Serial Event Listeners
     connectButton.addEventListener('click', connectToESP);
     disconnectButton.addEventListener('click', disconnectFromESP);
-    
-    controlMode.addEventListener('change', function() {
+
+    controlMode.addEventListener('change', function () {
         currentControlMode = this.value;
-        
+
         // Slider deaktivieren/aktivieren je nach Modus
         const isManual = currentControlMode === 'manual';
         mirror6Slider.disabled = !isManual && (currentControlMode.includes('mirror6') || currentControlMode === 'esp-both');
