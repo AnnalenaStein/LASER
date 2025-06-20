@@ -36,45 +36,6 @@
             <!-- Hier werden die Laser-Segmente dynamisch eingefügt -->
         </div>
 
-        <!-- Steuerungspanel nur für die drehbaren Spiegel -->
-        <div class="controls-panel">
-            <!-- Web Serial Controls -->
-            <div class="control-group">
-                <label>ESP Verbindung:</label>
-                <button id="connect-button">ESP Verbinden</button>
-                <button id="disconnect-button" disabled>Trennen</button>
-                <div id="connection-status">Nicht verbunden</div>
-            </div>
-            
-            <!-- ESP Control Mode Selection -->
-            <div class="control-group">
-                <label>Steuerungsmodus:</label>
-                <select id="control-mode">
-                    <option value="manual">Manuell (Slider)</option>
-                    <option value="esp-both">ESP → Beide Spiegel (A0+A1)</option>
-                </select>
-            </div>
-
-            <div class="control-group">
-                <label for="mirror6-angle">Spiegel 6 Winkel:</label>
-                <input type="range" id="mirror6-angle" min="0" max="360" value="180" step="1">
-                <span id="mirror6-angle-value">180°</span>
-            </div>
-            <div class="control-group">
-                <label for="mirror7-angle">Spiegel 7 Winkel:</label>
-                <input type="range" id="mirror7-angle" min="0" max="360" value="180" step="1">
-                <span id="mirror7-angle-value">180°</span>
-            </div>
-            
-            <!-- ESP Data Display -->
-            <div class="control-group" id="esp-data-group" style="display: none;">
-                <label>ESP Daten:</label>
-                <div id="esp-raw-value">Roh: -</div>
-                <div id="esp-mapped-value">Winkel: -</div>
-            </div>
-            
-            <button id="reset-button">Zurücksetzen</button>
-        </div>
     </div>
 
     <script src="js/script.js"></script>
