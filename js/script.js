@@ -590,7 +590,7 @@ document.addEventListener('DOMContentLoaded', function () {
             // Erwartetes Format für zwei Potis: "poti0:1023,poti1:2048" oder JSON: {"poti0":1023,"poti1":2048}
             let poti0Value = null;
             let poti1Value = null;
-            
+
             if (data.startsWith('{')) {
                 // JSON Format
                 const parsed = JSON.parse(data);
@@ -614,7 +614,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (key === 'poti0') poti0Value = value;
                 if (key === 'poti1') poti1Value = value;
             }
-            
+
             // Verarbeite die Werte
             if (poti0Value !== null && !isNaN(poti0Value)) {
                 updateESPDisplay(poti0Value, poti1Value);
@@ -623,7 +623,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 updateESPDisplay(poti0Value, poti1Value);
                 applyESPControlToMirrors(poti0Value, poti1Value);
             }
-            
+
         } catch (error) {
             console.error('Fehler beim Verarbeiten der ESP Daten:', error);
         }
@@ -678,16 +678,17 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Mapping-Funktionen für die verschiedenen Winkelbereiche
     // Eine Poti-Umdrehung = Eine Spiegel-Umdrehung (360°)
+    // Invertiert für richtige Drehrichtung: Rechts drehen = Spiegel dreht rechts
     function mapValueToMirror6Range(rawValue) {
-        // Arduino Wert (0-1023) direkt auf 360° mappen
+        // Arduino Wert (0-1023) invertiert auf 360°-0° mappen
         const normalizedValue = Math.max(0, Math.min(1023, rawValue));
-        return Math.round((normalizedValue / 1023) * 360);
+        return Math.round(360 - (normalizedValue / 1023) * 360);
     }
 
     function mapValueToMirror7Range(rawValue) {
-        // Arduino Wert (0-1023) direkt auf 360° mappen
+        // Arduino Wert (0-1023) invertiert auf 360°-0° mappen
         const normalizedValue = Math.max(0, Math.min(1023, rawValue));
-        return Math.round((normalizedValue / 1023) * 360);
+        return Math.round(360 - (normalizedValue / 1023) * 360);
     }
 
     // Hilfsfunktionen um Spiegel zu setzen
