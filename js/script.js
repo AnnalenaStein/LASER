@@ -50,8 +50,8 @@ document.addEventListener('DOMContentLoaded', function () {
         // Bottom mirrors positioning - linker Spiegel um halbe Spiegellänge nach rechts verschoben
         const bottomPositions = [
             { left: containerWidth * 0.30, top: containerHeight * 0.18 }, // Mirror 5 (nicht drehbar, links)
-            { left: containerWidth * 0.50, top: containerHeight * 0.18 }, // Mirror 6 (drehbar, mitte)
-            { left: containerWidth * 0.13, top: containerHeight * 0.18 }  // Mirror 7 (drehbar) - um halbe Spiegellänge nach rechts (von 0.10 auf 0.13)
+            { left: containerWidth * 0.49, top: containerHeight * 0.18 }, // Mirror 6 (drehbar, mitte)
+            { left: containerWidth * 0.125, top: containerHeight * 0.18 }  // Mirror 7 (drehbar) - ein bisschen mehr nach rechts (von 0.13 auf 0.15)
         ];
 
         const bottomMirrors = document.querySelectorAll('.bottom-mirrors .mirror');
@@ -589,21 +589,21 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // ESP Steuerung auf Spiegel anwenden
-   // ESP Steuerung auf Spiegel anwenden
-function applyESPControlToMirrors(poti0Value, poti1Value) {
-    // Potentiometer-Zuweisung getauscht:
-    // Poti1 steuert Mirror6, Poti0 steuert Mirror7
+    // ESP Steuerung auf Spiegel anwenden
+    function applyESPControlToMirrors(poti0Value, poti1Value) {
+        // Potentiometer-Zuweisung getauscht:
+        // Poti1 steuert Mirror6, Poti0 steuert Mirror7
 
-    if (poti1Value !== null && !isNaN(poti1Value)) {
-        const angle6 = mapValueToMirror6Range(poti1Value); // jetzt von Poti1
-        setMirror6Angle(angle6);
-    }
+        if (poti1Value !== null && !isNaN(poti1Value)) {
+            const angle6 = mapValueToMirror6Range(poti1Value); // jetzt von Poti1
+            setMirror6Angle(angle6);
+        }
 
-    if (poti0Value !== null && !isNaN(poti0Value)) {
-        const angle7 = mapValueToMirror7Range(poti0Value); // jetzt von Poti0
-        setMirror7Angle(angle7);
+        if (poti0Value !== null && !isNaN(poti0Value)) {
+            const angle7 = mapValueToMirror7Range(poti0Value); // jetzt von Poti0
+            setMirror7Angle(angle7);
+        }
     }
-}
 
 
     // Mapping-Funktionen für die verschiedenen Winkelbereiche
