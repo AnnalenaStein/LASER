@@ -6,6 +6,9 @@ document.addEventListener('DOMContentLoaded', function () {
     const prism = document.getElementById('prism1');
     const beamsContainer = document.getElementById('beams-container');
 
+    // Laser-Status Variable
+    let laserEnabled = false; // Laser ist zu Beginn ausgeschaltet
+
     window.addEventListener('message', function (event) {
         if (event.data && event.data.type === 'protopie') {
             if (event.data.action === 'show') {
@@ -13,9 +16,19 @@ document.addEventListener('DOMContentLoaded', function () {
                 const overlay = document.getElementById('start-overlay');
                 if (overlay) overlay.style.visibility = 'hidden'; // Experiment anzeigen
             }
+            // Neue Nachricht für Laser einschalten
+            if (event.data.action === 'hide') {
+                console.log('[ProtoPie] hide empfangen - Laser wird eingeschaltet');
+                laserEnabled = true;
+                // Laser visuell einschalten
+                if (laser) {
+                    laser.style.opacity = '1';
+                }
+                // Laserstrahlen berechnen und anzeigen
+                calculateLaserPath();
+            }
         }
     });
-
 
     window.postMessage({
         type: 'protopie',
@@ -91,13 +104,16 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
 
-        // Positioniere den Laserpointer zurück zur Ausgangsposition (rechte Seite)
+        // Positioniere den Laserpointer und setze initial auf ausgeschaltet
         const laserPointer = document.getElementById('laser1');
         if (laserPointer) {
             // Zurück zur ursprünglichen Position auf der rechten Seite
             laserPointer.style.right = '60px';
             laserPointer.style.top = '50vh'; // Zwischen den Spiegelreihen
             laserPointer.style.transform = `translate(0, -50%)`;
+
+            // Laser initial ausgeschaltet (transparent)
+            laserPointer.style.opacity = laserEnabled ? '1' : '0.3';
 
             // Anpassung des Winkels, um den Laser auf den rechten oberen Spiegel zu richten
             const verticalOffset = containerHeight * 0.14 - topPositions[3].top;
@@ -141,11 +157,16 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    // Calculate and draw laser path
+    // Calculate and draw laser path - nur wenn Laser eingeschaltet ist
     function calculateLaserPath() {
         // Entferne vorhandene Laserstrahlen
         while (beamsContainer.firstChild) {
             beamsContainer.removeChild(beamsContainer.firstChild);
+        }
+
+        // Wenn Laser ausgeschaltet ist, keine Strahlen zeichnen
+        if (!laserEnabled) {
+            return;
         }
 
         // Startpunkt: Laser
@@ -674,7 +695,11 @@ document.addEventListener('DOMContentLoaded', function () {
         angle = ((angle % 360) + 360) % 360;
         mirror6Angle = angle;
         applyMirrorAngle(document.getElementById('mirror6'), angle);
-        calculateLaserPath();
+
+        // Nur berechnen wenn Laser eingeschaltet ist
+        if (laserEnabled) {
+            calculateLaserPath();
+        }
 
         //console.log(`[Mirror6] Winkel: ${angle}°`);
 
@@ -693,7 +718,11 @@ document.addEventListener('DOMContentLoaded', function () {
         angle = ((angle % 360) + 360) % 360;
         mirror7Angle = angle;
         applyMirrorAngle(document.getElementById('mirror7'), angle);
-        calculateLaserPath();
+
+        // Nur berechnen wenn Laser eingeschaltet ist
+        if (laserEnabled) {
+            calculateLaserPath();
+        }
 
         //console.log(`[Mirror7] Winkel: ${angle}°`);
 
@@ -715,8 +744,8 @@ document.addEventListener('DOMContentLoaded', function () {
         calculateLaserPath();
     });
 
-    // Initialisierung
+    // Initialisierung - Laser bleibt ausgeschaltet
     checkWebSerialSupport();
     setupMirrors();
-    calculateLaserPath();
+    // calculateLaserPath(); - Nicht mehr hier aufrufen, da Laser ausgeschaltet ist
 });
