@@ -47,12 +47,11 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
 
-        // Berechne die Zwischenräume für die unteren Spiegel
-        // Diese sollen zwischen den oberen Spiegeln platziert werden
+        // Bottom mirrors positioning - linker Spiegel um halbe Spiegellänge nach rechts verschoben
         const bottomPositions = [
-            { left: containerWidth * 0.30, top: containerHeight * 0.3 }, // Zwischen Spiegel 1 und 2
-            { left: containerWidth * 0.50, top: containerHeight * 0.3 }, // Zwischen Spiegel 2 und 3
-            { left: containerWidth * 0.10, top: containerHeight * 0.3 }  // Zwischen Spiegel 3 und 4
+            { left: containerWidth * 0.30, top: containerHeight * 0.18 }, // Mirror 5 (nicht drehbar, links)
+            { left: containerWidth * 0.50, top: containerHeight * 0.18 }, // Mirror 6 (drehbar, mitte)
+            { left: containerWidth * 0.13, top: containerHeight * 0.18 }  // Mirror 7 (drehbar) - um halbe Spiegellänge nach rechts (von 0.10 auf 0.13)
         ];
 
         const bottomMirrors = document.querySelectorAll('.bottom-mirrors .mirror');
@@ -63,16 +62,16 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
 
-        // Positioniere den Laserpointer in der vertikalen Mitte auf der rechten Seite
+        // Positioniere den Laserpointer zurück zur Ausgangsposition (rechte Seite)
         const laserPointer = document.getElementById('laser1');
         if (laserPointer) {
-            // Platziere den Laserpointer in der Mitte des Bildschirms (vertikal) und rechts
+            // Zurück zur ursprünglichen Position auf der rechten Seite
             laserPointer.style.right = '60px';
-            laserPointer.style.top = `${containerHeight / 2}px`;
-            laserPointer.style.transform = `translate(0, -50%)`;  // Zentriere vertikal
+            laserPointer.style.top = `${containerHeight * 0.14}px`; // Zwischen den Spiegelreihen
+            laserPointer.style.transform = `translate(0, -50%)`;
 
             // Anpassung des Winkels, um den Laser auf den rechten oberen Spiegel zu richten
-            const verticalOffset = containerHeight / 2 - topPositions[3].top;
+            const verticalOffset = containerHeight * 0.14 - topPositions[3].top;
             const horizontalDistance = containerWidth - 60 - topPositions[3].left;
             const angle = Math.atan2(-verticalOffset, -horizontalDistance) * (180 / Math.PI);
             laserPointer.style.transform = `translateY(-50%) rotate(${angle}deg)`;
