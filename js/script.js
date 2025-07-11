@@ -67,7 +67,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (laserPointer) {
             // Zurück zur ursprünglichen Position auf der rechten Seite
             laserPointer.style.right = '60px';
-            laserPointer.style.top = `${containerHeight * 0.14}px`; // Zwischen den Spiegelreihen
+            laserPointer.style.top = '50vh'; // Zwischen den Spiegelreihen
             laserPointer.style.transform = `translate(0, -50%)`;
 
             // Anpassung des Winkels, um den Laser auf den rechten oberen Spiegel zu richten
