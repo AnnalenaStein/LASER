@@ -1,9 +1,26 @@
 document.addEventListener('DOMContentLoaded', function () {
+
     // Finde alle nötigen Elemente
     const mirrors = document.querySelectorAll('.mirror');
     const laser = document.getElementById('laser1');
     const prism = document.getElementById('prism1');
     const beamsContainer = document.getElementById('beams-container');
+
+    window.addEventListener('message', function (event) {
+        if (event.data && event.data.type === 'protopie') {
+            if (event.data.action === 'show') {
+                console.log('[ProtoPie] show empfangen');
+                const overlay = document.getElementById('start-overlay');
+                if (overlay) overlay.style.visibility = 'hidden'; // Experiment anzeigen
+            }
+        }
+    });
+
+
+    window.postMessage({
+        type: 'protopie',
+        action: 'show'
+    }, '*');
 
     // Web Serial Variablen
     let port = null;
@@ -14,6 +31,18 @@ document.addEventListener('DOMContentLoaded', function () {
     // Virtuelle Werte für die Spiegelwinkel (da keine UI-Elemente mehr vorhanden)
     let mirror6Angle = 180;
     let mirror7Angle = 180;
+
+    let mirror6Aligned = false;
+    let mirror7Aligned = false;
+
+    let MIRROR_SIGNAL_TOLERANCE = 2;
+
+    // Initialisiere Socket.IO Verbindung
+    const socket = io('http://localhost:9981');
+
+    const startOverlay = document.getElementById('start-overlay');
+    startOverlay.style.visibility = 'visible'; // Schwarzbild bleibt oben
+
 
     // Erstelle ein Objekt für Spiegeldaten
     const mirrorData = {};
@@ -621,22 +650,64 @@ document.addEventListener('DOMContentLoaded', function () {
         return Math.round(360 - (normalizedValue / 1023) * 360);
     }
 
+    //hilfsfunktion für protopie
+    function sendSignalToProtoPie(signalName) {
+        window.postMessage(
+            {
+                type: 'protopie',
+                action: 'send',
+                name: signalName
+            },
+            '*'
+        );
+
+        // Socket.IO Nachricht senden
+        socket.emit("ppMessage", {
+            messageId: signalName,
+            fromName: "web app",
+            timestamp: Date.now(),
+        });
+    }
     // Hilfsfunktionen um Spiegel zu setzen
+
     function setMirror6Angle(angle) {
-        // Normalisiere Winkel auf 0-360° Bereich
         angle = ((angle % 360) + 360) % 360;
         mirror6Angle = angle;
         applyMirrorAngle(document.getElementById('mirror6'), angle);
         calculateLaserPath();
+
+        //console.log(`[Mirror6] Winkel: ${angle}°`);
+
+        if (Math.abs(angle - 180) <= MIRROR_SIGNAL_TOLERANCE && !mirror6Aligned) {
+            console.log('[Mirror6] Richtiger Bereich um 180° – Signal wird gesendet!');
+            sendSignalToProtoPie('mirror6Aligned');
+            mirror6Aligned = true; // Signal nur einmal senden
+        }
+        else if (Math.abs(angle - 180) >= MIRROR_SIGNAL_TOLERANCE && mirror6Aligned) {
+            mirror6Aligned = false; // Reset, falls nicht im Bereich
+            sendSignalToProtoPie('mirror6NotAligned');
+        }
     }
 
     function setMirror7Angle(angle) {
-        // Normalisiere Winkel auf 0-360° Bereich
         angle = ((angle % 360) + 360) % 360;
         mirror7Angle = angle;
         applyMirrorAngle(document.getElementById('mirror7'), angle);
         calculateLaserPath();
+
+        //console.log(`[Mirror7] Winkel: ${angle}°`);
+
+        if (Math.abs(angle - 180) <= MIRROR_SIGNAL_TOLERANCE && !mirror7Aligned) {
+            console.log('[Mirror7] Richtiger Bereich um 180° – Signal wird gesendet!');
+            sendSignalToProtoPie('mirror7Aligned');
+            mirror7Aligned = true; // Signal nur einmal senden
+        }
+        else if (Math.abs(angle - 180) >= MIRROR_SIGNAL_TOLERANCE && mirror7Aligned) {
+            mirror7Aligned = false; // Reset, falls nicht im Bereich
+            sendSignalToProtoPie('mirror7NotAligned');
+        }
     }
+
 
     // Fenster-Resize-Behandlung
     window.addEventListener('resize', function () {
