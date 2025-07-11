@@ -589,18 +589,22 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // ESP Steuerung auf Spiegel anwenden
-    function applyESPControlToMirrors(poti0Value, poti1Value) {
-        // Immer beide Spiegel direkt mit ihren entsprechenden Potis steuern
-        if (poti0Value !== null && !isNaN(poti0Value)) {
-            const angle6 = mapValueToMirror6Range(poti0Value);
-            setMirror6Angle(angle6);
-        }
+   // ESP Steuerung auf Spiegel anwenden
+function applyESPControlToMirrors(poti0Value, poti1Value) {
+    // Potentiometer-Zuweisung getauscht:
+    // Poti1 steuert Mirror6, Poti0 steuert Mirror7
 
-        if (poti1Value !== null && !isNaN(poti1Value)) {
-            const angle7 = mapValueToMirror7Range(poti1Value);
-            setMirror7Angle(angle7);
-        }
+    if (poti1Value !== null && !isNaN(poti1Value)) {
+        const angle6 = mapValueToMirror6Range(poti1Value); // jetzt von Poti1
+        setMirror6Angle(angle6);
     }
+
+    if (poti0Value !== null && !isNaN(poti0Value)) {
+        const angle7 = mapValueToMirror7Range(poti0Value); // jetzt von Poti0
+        setMirror7Angle(angle7);
+    }
+}
+
 
     // Mapping-Funktionen für die verschiedenen Winkelbereiche
     // Eine Poti-Umdrehung = Eine Spiegel-Umdrehung (360°)
