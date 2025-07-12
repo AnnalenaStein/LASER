@@ -7,20 +7,24 @@ document.addEventListener('DOMContentLoaded', function () {
     const beamsContainer = document.getElementById('beams-container');
 
     window.addEventListener('message', function (event) {
+        console.log('[Debug] Raw Message empfangen:', event.data);
+
         if (event.data && event.data.type === 'protopie') {
             if (event.data.action === 'show') {
                 console.log('[ProtoPie] show empfangen');
                 const overlay = document.getElementById('start-overlay');
-                if (overlay) overlay.style.visibility = 'hidden'; // Experiment anzeigen
+                if (overlay) overlay.style.visibility = 'hidden';
+                calculateLaserPath();
             }
         }
     });
 
 
-    window.postMessage({
-        type: 'protopie',
-        action: 'show'
-    }, '*');
+
+    // window.postMessage({
+    //     type: 'protopie',
+    //     action: 'show'
+    // }, '*');
 
     // Web Serial Variablen
     let port = null;
@@ -42,6 +46,22 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const startOverlay = document.getElementById('start-overlay');
     startOverlay.style.visibility = 'visible'; // Schwarzbild bleibt oben
+
+    socket.on('ppMessage', (data) => {
+        console.log('[Socket.IO] Nachricht empfangen:', data);
+
+        if (!data || typeof data !== 'object') return;
+
+        const { messageId } = data;
+        console.log('[Socket.IO] messageId:', messageId);
+
+        if (messageId === "show") {
+            startOverlay.style.visibility = 'hidden'; // Schwarzbild ausblenden
+        }
+        else if (messageId === "hide") {
+            startOverlay.style.visibility = 'visible'; // Schwarzbild wieder anzeigen
+        }
+    });
 
 
     // Erstelle ein Objekt für Spiegeldaten
@@ -712,11 +732,11 @@ document.addEventListener('DOMContentLoaded', function () {
     // Fenster-Resize-Behandlung
     window.addEventListener('resize', function () {
         setupMirrors();
-        calculateLaserPath();
+        // calculateLaserPath();
     });
 
     // Initialisierung
     checkWebSerialSupport();
     setupMirrors();
-    calculateLaserPath();
+    // calculateLaserPath();
 });
