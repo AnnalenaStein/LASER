@@ -5,6 +5,14 @@ body {
     height: 100vh;
     overflow: hidden;
     font-family: Arial, sans-serif;
+    font-family: 'Noway-Medium', sans-serif;
+}
+
+@font-face {
+    font-family: 'Noway-Medium';
+    src: url('./fonts/Noway-Medium.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
 }
 
 .container {
@@ -263,7 +271,6 @@ select:focus {
     color: #4f9;
     font-weight: bold;
 }
-
 /* Tutorial Animationen */
 @keyframes fadeInOut {
     0% {
