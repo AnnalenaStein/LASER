@@ -15,6 +15,35 @@ body {
     font-display: swap;
 }
 
+#white-lightbeam {
+    position: absolute;
+    bottom: 0;
+    width: 50px;
+    height: 200px;
+    background: radial-gradient(ellipse at center, rgba(255,255,255,0.6) 0%, rgba(255, 255, 255, 0.36) 80%, transparent 100%);
+    clip-path: polygon(50% 100%, 0% 0%, 100% 0%);
+    z-index: 40;
+    pointer-events: none;
+    transition: height 1s ease-in-out;
+    left: 55px;
+}
+
+#rainbow-beam {
+    position: absolute;
+    width: 100px;
+    height: 700px;
+    background: linear-gradient(to right, 
+    rgba(255,255,255,0.5), red, orange, yellow, green, cyan, blue, rgb(229, 18, 252));
+    clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+    opacity: 0.8;
+    z-index: 50;
+    pointer-events: none;
+    transition: opacity 0.5s ease-in-out;
+    bottom: 220px;
+    left: -30px;
+    transform: rotate(170deg);
+}
+
 .container {
     width: 100%;
     height: 100%;
