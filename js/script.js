@@ -1229,6 +1229,7 @@ document.addEventListener('DOMContentLoaded', function () {
         angle = ((angle % 360) + 360) % 360;
         mirror6Angle = angle;
         applyMirrorAngle(document.getElementById('mirror6'), angle);
+        showStep4();
 
         // // Tutorial-Schritt 4 auslösen (Laser-Erklärung)
         // if (tutorialStep === 3) {
