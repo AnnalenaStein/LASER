@@ -1135,6 +1135,7 @@ document.addEventListener('DOMContentLoaded', function () {
             // Erwartetes Format für zwei Potis: "poti0:1023,poti1:2048" oder JSON: {"poti0":1023,"poti1":2048}
             let poti0Value = null;
             let poti1Value = null;
+            console.log('[RAW DATA]', data);
 
             if (data.startsWith('{')) {
                 // JSON Format
@@ -1176,6 +1177,8 @@ document.addEventListener('DOMContentLoaded', function () {
     function applyESPControlToMirrors(poti0Value, poti1Value) {
         // Potentiometer-Zuweisung getauscht:
         // Poti1 steuert Mirror6, Poti0 steuert Mirror7
+
+        console.log('[ESP] applyESPControlToMirrors', poti0Value, poti1Value);
 
         if (poti1Value !== null && !isNaN(poti1Value)) {
             const angle6 = mapValueToMirror6Range(poti1Value); // jetzt von Poti1
@@ -1230,6 +1233,7 @@ document.addEventListener('DOMContentLoaded', function () {
         mirror6Angle = angle;
         applyMirrorAngle(document.getElementById('mirror6'), angle);
         showStep4();
+        
 
         // // Tutorial-Schritt 4 auslösen (Laser-Erklärung)
         // if (tutorialStep === 3) {
