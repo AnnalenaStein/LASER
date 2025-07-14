@@ -582,18 +582,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 console.log('🎯 [TEST] Tutorial manuell gestartet');
                 startTutorial();
                 break;
-            // case 'j':
-            //     if (!beamVisible) {
-            //         const prismTop = prism.offsetTop;
-            //         const prismCenterX = prism.offsetLeft + prism.offsetWidth / 2;
-            //         const beamHeight = window.innerHeight - prismTop;
-
-            //         whiteBeam.style.left = `${prismCenterX - 30}px`;
-            //         whiteBeam.style.height = `${beamHeight}px`;
-            //         beamVisible = true;
-                    
-            //     }
-            //     break;
 
         }
      }
@@ -1242,10 +1230,10 @@ document.addEventListener('DOMContentLoaded', function () {
         mirror6Angle = angle;
         applyMirrorAngle(document.getElementById('mirror6'), angle);
 
-        // Tutorial-Schritt 4 auslösen (Laser-Erklärung)
-        if (tutorialStep === 3) {
-            showStep4();
-        }
+        // // Tutorial-Schritt 4 auslösen (Laser-Erklärung)
+        // if (tutorialStep === 3) {
+        //     showStep4();
+        // }
 
         // Nur berechnen wenn Laser eingeschaltet ist
         if (laserEnabled) {
