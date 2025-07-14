@@ -550,7 +550,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // TEST-FUNKTIONALITÄT: Tastatur-Steuerung für Tests ohne Hardware
     window.addEventListener('keydown', function (event) {
         // Nur im Test-Modus (wenn Tutorial nicht aktiv ist)
-        // if (!tutorialActive) {
+        if (!tutorialActive) {
         switch (event.key.toLowerCase()) {
             case 'l':
                 console.log('🔦 [TEST] Laser manuell eingeschaltet');
@@ -596,7 +596,7 @@ document.addEventListener('DOMContentLoaded', function () {
             //     break;
 
         }
-        // }
+     }
     });
 
 
