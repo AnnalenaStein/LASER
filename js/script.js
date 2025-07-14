@@ -6,38 +6,615 @@ document.addEventListener('DOMContentLoaded', function () {
     const prism = document.getElementById('prism1');
     const beamsContainer = document.getElementById('beams-container');
 
-    // Laser-Status Variable
-    let laserEnabled = false; // Laser ist zu Beginn ausgeschaltet
+    // Tutorial-Status Variablen
+    let tutorialStep = 0;
+    let laserEnabled = false;
+    let tutorialActive = false;
+    let mirror6Correct = false;
+    let mirror7Correct = false;
 
+    // Event Listener für ProtoPie und Test-Klick
     window.addEventListener('message', function (event) {
         console.log('[Debug] Raw Message empfangen:', event.data);
 
         if (event.data && event.data.type === 'protopie') {
             if (event.data.action === 'show') {
-                console.log('[ProtoPie] show empfangen');
-                const overlay = document.getElementById('start-overlay');
-                if (overlay) overlay.style.visibility = 'hidden';
-                calculateLaserPath();
+                console.log('[ProtoPie] show empfangen - Tutorial startet');
+                startTutorial();
             }
-            // Neue Nachricht für Laser einschalten
             if (event.data.action === 'hide') {
                 console.log('[ProtoPie] hide empfangen - Laser wird eingeschaltet');
                 laserEnabled = true;
-                // Laser visuell einschalten
                 if (laser) {
                     laser.style.opacity = '1';
                 }
-                // Laserstrahlen berechnen und anzeigen
                 calculateLaserPath();
             }
         }
     });
 
+    // Test-Klick um Tutorial zu starten (ohne ProtoPie)
+    document.addEventListener('click', function (event) {
+        if (!tutorialActive && tutorialStep === 0) {
+            console.log('[Test] Klick erkannt - Tutorial startet');
+            startTutorial();
+        }
+    });
 
-    // window.postMessage({
-    //     type: 'protopie',
-    //     action: 'show'
-    // }, '*');
+    // Tutorial starten
+    function startTutorial() {
+        tutorialActive = true;
+        const overlay = document.getElementById('start-overlay');
+        if (overlay) overlay.style.visibility = 'hidden';
+
+        showStep1();
+    }
+
+    // Schritt 1: Erklärungstext
+    function showStep1() {
+        tutorialStep = 1;
+        showTutorialText(
+            `Lenke den Strahl von Spiegel zu Spiegel auf das Prisma.<br><br>
+            Laserlicht wird im gleichen Winkel reflektiert:<br>
+            <strong>Einfallswinkel = Ausfallswinkel</strong>`,
+            4000,
+            showStep2,
+            'top-right'
+        );
+    }
+
+    // Schritt 2: Erste Spiegelanweisung
+    function showStep2() {
+        tutorialStep = 2;
+        showTutorialText(
+            'Stelle den Spiegel so ein, dass der Laser zum nächsten Spiegel trifft.',
+            3000,
+            showStep3,
+            'top-right'
+        );
+    }
+
+    // Schritt 3: Spotlight auf rechten Spiegel (keine Pfeile mehr)
+    function showStep3() {
+        tutorialStep = 3;
+        laserEnabled = true;
+        if (laser) laser.style.opacity = '1';
+        calculateLaserPath();
+
+        // Spotlight auf Mirror6 (rechten bewegbaren Spiegel)
+        createSpotlight('mirror6');
+
+        // Text rechts vom Spiegel
+        showMirrorText(
+            'Drehe diesen Spiegel',
+            3000,
+            'mirror6'
+        );
+    }
+
+    // Schritt 4: Laser-Erklärung (wird ausgelöst wenn Mirror6 bewegt wird)
+    function showStep4() {
+        if (tutorialStep !== 3) return;
+        tutorialStep = 4;
+
+        showTutorialText(
+            'Bei einem Laser haben alle Lichtteilchen dieselbe Farbe, Richtung und Schwingung.<br><br>Das macht den Strahl stark und präzise.',
+            4000,
+            showStep5,
+            'top-right'
+        );
+    }
+
+    // Schritt 5: Zusatzinfo
+    function showStep5() {
+        tutorialStep = 5;
+        showTutorialText(
+            'So stark, dass er Metall schneiden oder Daten durch Glasfasern senden kann.',
+            3000,
+            null,
+            'top-right'
+        );
+    }
+
+    // Schritt 6: Zweiter Spiegel (wird ausgelöst wenn Mirror6 korrekt)
+    function showStep6() {
+        tutorialStep = 6;
+
+        // Entferne Spotlight von Mirror6
+        removeSpotlight('mirror6');
+
+        // Spotlight auf Mirror7 (linken bewegbaren Spiegel)
+        createSpotlight('mirror7');
+
+        // Text rechts vom Spiegel
+        showMirrorText(
+            'Lenke den Strahl auf das Prisma',
+            3000,
+            'mirror7'
+        );
+    }
+
+    // Schritt 7: Erfolg
+    function showStep7() {
+        tutorialStep = 7;
+
+        // Entferne alle Spotlights
+        removeSpotlight('mirror7');
+
+        showTutorialText(
+            'Super!',
+            2000,
+            completeTutorial,
+            'top-right'
+        );
+    }
+
+    // Tutorial beenden
+    function completeTutorial() {
+        tutorialActive = false;
+        console.log('[Tutorial] Abgeschlossen!');
+    }
+
+    // Allgemeine Funktion für Tutorial-Texte
+    function showTutorialText(text, duration, callback, position = 'top-right') {
+        // Entferne vorhandene Texte
+        const existingTexts = document.querySelectorAll('.tutorial-text');
+        existingTexts.forEach(text => text.remove());
+
+        // Erstelle Text-Element
+        const textElement = document.createElement('div');
+        textElement.className = 'tutorial-text';
+        textElement.innerHTML = text;
+
+        // Styling für den Text - HALBE GRÖßE
+        textElement.style.position = 'fixed';
+        textElement.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+        textElement.style.color = '#fff';
+        textElement.style.padding = '8px 12px'; // Reduziert von 15px 25px
+        textElement.style.borderRadius = '4px'; // Reduziert von 8px
+        textElement.style.fontSize = '9px'; // Reduziert von 18px auf die Hälfte
+        textElement.style.fontWeight = 'normal';
+        textElement.style.textAlign = 'left';
+        textElement.style.lineHeight = '1.3'; // Leicht reduziert von 1.4
+        textElement.style.maxWidth = '150px'; // Reduziert von 300px
+        textElement.style.zIndex = '2000';
+        textElement.style.boxShadow = '0 2px 6px rgba(0, 0, 0, 0.3)'; // Reduziert von 0 4px 12px
+        textElement.style.animation = 'fadeInText 0.5s ease-in';
+
+        // Positionierung je nach Parameter
+        if (position === 'top-right') {
+            textElement.style.top = '10px'; // Reduziert von 20px
+            textElement.style.right = '10px'; // Reduziert von 20px
+        } else if (position === 'mirror-right') {
+            // Position wird dynamisch gesetzt
+        }
+
+        // Füge Text zum DOM hinzu
+        document.body.appendChild(textElement);
+
+        // Entferne Text nach angegebener Zeit und rufe Callback auf
+        setTimeout(() => {
+            if (textElement.parentNode) {
+                textElement.style.animation = 'fadeOutText 0.5s ease-out';
+                setTimeout(() => {
+                    textElement.remove();
+                    if (callback) callback();
+                }, 500);
+            }
+        }, duration);
+
+        return textElement;
+    }
+
+    // Spezielle Funktion für Spiegel-bezogene Texte
+    function showMirrorText(text, duration, mirrorId, callback) {
+        const mirror = document.getElementById(mirrorId);
+        if (!mirror) return;
+
+        const textElement = showTutorialText(text, duration, callback, 'mirror-right');
+
+        // Positioniere rechts vom Spiegel - mit reduziertem Abstand
+        const mirrorRect = mirror.getBoundingClientRect();
+        textElement.style.left = `${mirrorRect.right + 15}px`; // Reduziert von 30px
+        textElement.style.top = `${mirrorRect.top - 5}px`; // Reduziert von -10px
+    }
+
+    // Spotlight erstellen - KLEINERES Design
+    function createSpotlight(mirrorId) {
+        const mirror = document.getElementById(mirrorId);
+        if (!mirror) return;
+
+        // Entferne vorhandene Spotlights
+        const existingSpotlights = document.querySelectorAll('.spotlight');
+        existingSpotlights.forEach(spot => spot.remove());
+
+        const spotlight = document.createElement('div');
+        spotlight.className = 'spotlight';
+        spotlight.style.position = 'absolute';
+        spotlight.style.width = '120px'; // Reduziert von 200px
+        spotlight.style.height = '120px'; // Reduziert von 200px
+        spotlight.style.borderRadius = '50%';
+
+        // Natürliches weißes Licht wie Taschenlampe
+        spotlight.style.background = `
+            radial-gradient(circle, 
+                rgba(255, 255, 255, 0.4) 0%, 
+                rgba(255, 255, 255, 0.2) 40%, 
+                rgba(255, 255, 255, 0.1) 60%, 
+                rgba(255, 255, 255, 0.05) 80%, 
+                transparent 100%
+            )
+        `;
+
+        spotlight.style.border = '1px solid rgba(255, 255, 255, 0.3)'; // Reduziert von 2px
+        spotlight.style.boxShadow = `
+            0 0 20px rgba(255, 255, 255, 0.4),
+            inset 0 0 15px rgba(255, 255, 255, 0.1)
+        `; // Reduzierte Schatten: 30px->20px, 20px->15px
+        spotlight.style.animation = 'flashlightPulse 3s infinite ease-in-out';
+        spotlight.style.zIndex = '100';
+        spotlight.style.pointerEvents = 'none';
+
+        // Positioniere Spotlight über dem Spiegel - angepasst für kleinere Größe
+        const mirrorRect = mirror.getBoundingClientRect();
+        spotlight.style.left = `${mirrorRect.left + mirrorRect.width / 2 - 60}px`; // Reduziert von -100px
+        spotlight.style.top = `${mirrorRect.top + mirrorRect.height / 2 - 60}px`; // Reduziert von -100px
+
+        document.body.appendChild(spotlight);
+    }
+
+    // Schritt 4: Laser-Erklärung (wird ausgelöst wenn Mirror6 bewegt wird)
+    function showStep4() {
+        if (tutorialStep !== 3) return;
+        tutorialStep = 4;
+
+        showTutorialText(
+            'Bei einem Laser haben alle Lichtteilchen dieselbe Farbe, Richtung und Schwingung.<br><br>Das macht den Strahl stark und präzise.',
+            4000,
+            showStep5,
+            'top-right'
+        );
+    }
+
+    // Schritt 5: Zusatzinfo
+    function showStep5() {
+        tutorialStep = 5;
+        showTutorialText(
+            'So stark, dass er Metall schneiden oder Daten durch Glasfasern senden kann.',
+            3000,
+            null,
+            'top-right'
+        );
+    }
+
+    // Schritt 6: Zweiter Spiegel (wird ausgelöst wenn Mirror6 korrekt)
+    function showStep6() {
+        tutorialStep = 6;
+
+        // Entferne Spotlight von Mirror6
+        removeSpotlight('mirror6');
+
+        // Spotlight auf Mirror7 (linken bewegbaren Spiegel)
+        createSpotlight('mirror7');
+
+        // Text rechts vom Spiegel
+        showMirrorText(
+            'Lenke den Strahl auf das Prisma',
+            3000,
+            'mirror7'
+        );
+    }
+
+    // Schritt 7: Erfolg
+    function showStep7() {
+        tutorialStep = 7;
+
+        // Entferne alle Spotlights
+        removeSpotlight('mirror7');
+
+        showTutorialText(
+            'Super!',
+            2000,
+            completeTutorial,
+            'top-right'
+        );
+    }
+
+    // Tutorial beenden
+    function completeTutorial() {
+        tutorialActive = false;
+        console.log('[Tutorial] Abgeschlossen!');
+    }
+
+    // Allgemeine Funktion für Tutorial-Texte
+    function showTutorialText(text, duration, callback, position = 'top-right') {
+        // Entferne vorhandene Texte
+        const existingTexts = document.querySelectorAll('.tutorial-text');
+        existingTexts.forEach(text => text.remove());
+
+        // Erstelle Text-Element
+        const textElement = document.createElement('div');
+        textElement.className = 'tutorial-text';
+        textElement.innerHTML = text;
+
+        // Styling für den Text - HALBE GRÖßE
+        textElement.style.position = 'fixed';
+        textElement.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+        textElement.style.color = '#fff';
+        textElement.style.padding = '8px 12px'; // Reduziert von 15px 25px
+        textElement.style.borderRadius = '4px'; // Reduziert von 8px
+        textElement.style.fontSize = '9px'; // Reduziert von 18px auf die Hälfte
+        textElement.style.fontWeight = 'normal';
+        textElement.style.textAlign = 'left';
+        textElement.style.lineHeight = '1.3'; // Leicht reduziert von 1.4
+        textElement.style.maxWidth = '150px'; // Reduziert von 300px
+        textElement.style.zIndex = '2000';
+        textElement.style.boxShadow = '0 2px 6px rgba(0, 0, 0, 0.3)'; // Reduziert von 0 4px 12px
+        textElement.style.animation = 'fadeInText 0.5s ease-in';
+
+        // Positionierung je nach Parameter
+        if (position === 'top-right') {
+            textElement.style.top = '10px'; // Reduziert von 20px
+            textElement.style.right = '10px'; // Reduziert von 20px
+        } else if (position === 'mirror-right') {
+            // Position wird dynamisch gesetzt
+        }
+
+        // Füge Text zum DOM hinzu
+        document.body.appendChild(textElement);
+
+        // Entferne Text nach angegebener Zeit und rufe Callback auf
+        setTimeout(() => {
+            if (textElement.parentNode) {
+                textElement.style.animation = 'fadeOutText 0.5s ease-out';
+                setTimeout(() => {
+                    textElement.remove();
+                    if (callback) callback();
+                }, 500);
+            }
+        }, duration);
+
+        return textElement;
+    }
+
+    // Spezielle Funktion für Spiegel-bezogene Texte
+    function showMirrorText(text, duration, mirrorId, callback) {
+        const mirror = document.getElementById(mirrorId);
+        if (!mirror) return;
+
+        const textElement = showTutorialText(text, duration, callback, 'mirror-right');
+
+        // Positioniere rechts vom Spiegel - mit reduziertem Abstand
+        const mirrorRect = mirror.getBoundingClientRect();
+        textElement.style.left = `${mirrorRect.right + 15}px`; // Reduziert von 30px
+        textElement.style.top = `${mirrorRect.top - 5}px`; // Reduziert von -10px
+    }
+
+    // Spotlight erstellen - KLEINERES Design
+    function createSpotlight(mirrorId) {
+        const mirror = document.getElementById(mirrorId);
+        if (!mirror) return;
+
+        // Entferne vorhandene Spotlights
+        const existingSpotlights = document.querySelectorAll('.spotlight');
+        existingSpotlights.forEach(spot => spot.remove());
+
+        const spotlight = document.createElement('div');
+        spotlight.className = 'spotlight';
+        spotlight.style.position = 'absolute';
+        spotlight.style.width = '120px'; // Reduziert von 200px
+        spotlight.style.height = '120px'; // Reduziert von 200px
+        spotlight.style.borderRadius = '50%';
+
+        // Natürliches weißes Licht wie Taschenlampe
+        spotlight.style.background = `
+            radial-gradient(circle, 
+                rgba(255, 255, 255, 0.4) 0%, 
+                rgba(255, 255, 255, 0.2) 40%, 
+                rgba(255, 255, 255, 0.1) 60%, 
+                rgba(255, 255, 255, 0.05) 80%, 
+                transparent 100%
+            )
+        `;
+
+        spotlight.style.border = '1px solid rgba(255, 255, 255, 0.3)'; // Reduziert von 2px
+        spotlight.style.boxShadow = `
+            0 0 20px rgba(255, 255, 255, 0.4),
+            inset 0 0 15px rgba(255, 255, 255, 0.1)
+        `; // Reduzierte Schatten: 30px->20px, 20px->15px
+        spotlight.style.animation = 'flashlightPulse 3s infinite ease-in-out';
+        spotlight.style.zIndex = '100';
+        spotlight.style.pointerEvents = 'none';
+
+        // Positioniere Spotlight über dem Spiegel - angepasst für kleinere Größe
+        const mirrorRect = mirror.getBoundingClientRect();
+        spotlight.style.left = `${mirrorRect.left + mirrorRect.width / 2 - 60}px`; // Reduziert von -100px
+        spotlight.style.top = `${mirrorRect.top + mirrorRect.height / 2 - 60}px`; // Reduziert von -100px
+
+        document.body.appendChild(spotlight);
+    }
+
+    // Schritt 4: Laser-Erklärung (wird ausgelöst wenn Mirror6 bewegt wird)
+    function showStep4() {
+        if (tutorialStep !== 3) return;
+        tutorialStep = 4;
+
+        showTutorialText(
+            'Bei einem Laser haben alle Lichtteilchen dieselbe Farbe, Richtung und Schwingung.<br><br>Das macht den Strahl stark und präzise.',
+            4000,
+            showStep5,
+            'top-right'
+        );
+    }
+
+    // Schritt 5: Zusatzinfo
+    function showStep5() {
+        tutorialStep = 5;
+        showTutorialText(
+            'So stark, dass er Metall schneiden oder Daten durch Glasfasern senden kann.',
+            3000,
+            null,
+            'top-right'
+        );
+    }
+
+    // Schritt 6: Zweiter Spiegel (wird ausgelöst wenn Mirror6 korrekt)
+    function showStep6() {
+        tutorialStep = 6;
+
+        // Entferne Spotlight von Mirror6
+        removeSpotlight('mirror6');
+
+        // Spotlight auf Mirror7 (linken bewegbaren Spiegel)
+        createSpotlight('mirror7');
+
+        // Text rechts vom Spiegel
+        showMirrorText(
+            'Lenke den Strahl auf das Prisma',
+            3000,
+            'mirror7'
+        );
+    }
+
+    // Schritt 7: Erfolg
+    function showStep7() {
+        tutorialStep = 7;
+
+        // Entferne alle Spotlights
+        removeSpotlight('mirror7');
+
+        showTutorialText(
+            'Super!',
+            2000,
+            completeTutorial,
+            'top-right'
+        );
+    }
+
+    // Tutorial beenden
+    function completeTutorial() {
+        tutorialActive = false;
+        console.log('[Tutorial] Abgeschlossen!');
+    }
+
+    // Allgemeine Funktion für Tutorial-Texte
+    function showTutorialText(text, duration, callback, position = 'top-right') {
+        // Entferne vorhandene Texte
+        const existingTexts = document.querySelectorAll('.tutorial-text');
+        existingTexts.forEach(text => text.remove());
+
+        // Erstelle Text-Element
+        const textElement = document.createElement('div');
+        textElement.className = 'tutorial-text';
+        textElement.innerHTML = text;
+
+        // Styling für den Text - HALBE GRÖßE
+        textElement.style.position = 'fixed';
+        textElement.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+        textElement.style.color = '#fff';
+        textElement.style.padding = '8px 12px'; // Reduziert von 15px 25px
+        textElement.style.borderRadius = '4px'; // Reduziert von 8px
+        textElement.style.fontSize = '9px'; // Reduziert von 18px auf die Hälfte
+        textElement.style.fontWeight = 'normal';
+        textElement.style.textAlign = 'left';
+        textElement.style.lineHeight = '1.3'; // Leicht reduziert von 1.4
+        textElement.style.maxWidth = '150px'; // Reduziert von 300px
+        textElement.style.zIndex = '2000';
+        textElement.style.boxShadow = '0 2px 6px rgba(0, 0, 0, 0.3)'; // Reduziert von 0 4px 12px
+        textElement.style.animation = 'fadeInText 0.5s ease-in';
+
+        // Positionierung je nach Parameter
+        if (position === 'top-right') {
+            textElement.style.top = '10px'; // Reduziert von 20px
+            textElement.style.right = '10px'; // Reduziert von 20px
+        } else if (position === 'mirror-right') {
+            // Position wird dynamisch gesetzt
+        }
+
+        // Füge Text zum DOM hinzu
+        document.body.appendChild(textElement);
+
+        // Entferne Text nach angegebener Zeit und rufe Callback auf
+        setTimeout(() => {
+            if (textElement.parentNode) {
+                textElement.style.animation = 'fadeOutText 0.5s ease-out';
+                setTimeout(() => {
+                    textElement.remove();
+                    if (callback) callback();
+                }, 500);
+            }
+        }, duration);
+
+        return textElement;
+    }
+
+    // Spezielle Funktion für Spiegel-bezogene Texte
+    function showMirrorText(text, duration, mirrorId, callback) {
+        const mirror = document.getElementById(mirrorId);
+        if (!mirror) return;
+
+        const textElement = showTutorialText(text, duration, callback, 'mirror-right');
+
+        // Positioniere rechts vom Spiegel - mit reduziertem Abstand
+        const mirrorRect = mirror.getBoundingClientRect();
+        textElement.style.left = `${mirrorRect.right + 15}px`; // Reduziert von 30px
+        textElement.style.top = `${mirrorRect.top - 5}px`; // Reduziert von -10px
+    }
+
+    // Spotlight erstellen - KLEINERES Design
+    function createSpotlight(mirrorId) {
+        const mirror = document.getElementById(mirrorId);
+        if (!mirror) return;
+
+        // Entferne vorhandene Spotlights
+        const existingSpotlights = document.querySelectorAll('.spotlight');
+        existingSpotlights.forEach(spot => spot.remove());
+
+        const spotlight = document.createElement('div');
+        spotlight.className = 'spotlight';
+        spotlight.style.position = 'absolute';
+        spotlight.style.width = '120px'; // Reduziert von 200px
+        spotlight.style.height = '120px'; // Reduziert von 200px
+        spotlight.style.borderRadius = '50%';
+
+        // Natürliches weißes Licht wie Taschenlampe
+        spotlight.style.background = `
+            radial-gradient(circle, 
+                rgba(255, 255, 255, 0.4) 0%, 
+                rgba(255, 255, 255, 0.2) 40%, 
+                rgba(255, 255, 255, 0.1) 60%, 
+                rgba(255, 255, 255, 0.05) 80%, 
+                transparent 100%
+            )
+        `;
+
+        spotlight.style.border = '1px solid rgba(255, 255, 255, 0.3)'; // Reduziert von 2px
+        spotlight.style.boxShadow = `
+            0 0 20px rgba(255, 255, 255, 0.4),
+            inset 0 0 15px rgba(255, 255, 255, 0.1)
+        `; // Reduzierte Schatten: 30px->20px, 20px->15px
+        spotlight.style.animation = 'flashlightPulse 3s infinite ease-in-out';
+        spotlight.style.zIndex = '100';
+        spotlight.style.pointerEvents = 'none';
+
+        // Positioniere Spotlight über dem Spiegel - angepasst für kleinere Größe
+        const mirrorRect = mirror.getBoundingClientRect();
+        spotlight.style.left = `${mirrorRect.left + mirrorRect.width / 2 - 60}px`; // Reduziert von -100px
+        spotlight.style.top = `${mirrorRect.top + mirrorRect.height / 2 - 60}px`; // Reduziert von -100px
+
+        document.body.appendChild(spotlight);
+    }
+
+    // Rotationspfeile erstellen - ENTFERNT
+    function createRotationArrows(mirrorId) {
+        // Pfeile sind nicht mehr gewünscht - Funktion leer lassen
+        // aber nicht löschen, da sie noch aufgerufen wird
+    }
+
+    // Rotationspfeile entfernen
+    function removeRotationArrows() {
+        // Pfeile sind nicht mehr vorhanden - Funktion leer lassen
+    }
 
     // Web Serial Variablen
     let port = null;
@@ -54,28 +631,55 @@ document.addEventListener('DOMContentLoaded', function () {
 
     let MIRROR_SIGNAL_TOLERANCE = 2;
 
-    // Initialisiere Socket.IO Verbindung
-    const socket = io('http://localhost:9981');
+    // Socket.IO mit Fehlerbehandlung
+    let socket;
+    try {
+        socket = io('http://localhost:9981', {
+            timeout: 2000,
+            autoConnect: false
+        });
+
+        socket.on('connect', () => {
+            console.log('✅ Socket.IO verbunden');
+        });
+
+        socket.on('connect_error', (error) => {
+            console.log('❌ Socket.IO nicht verfügbar - verwende Fallback-Modus');
+        });
+
+        socket.on('ppMessage', (data) => {
+            console.log('[Socket.IO] Nachricht empfangen:', data);
+
+            if (!data || typeof data !== 'object') return;
+
+            const { messageId } = data;
+            console.log('[Socket.IO] messageId:', messageId);
+
+            if (messageId === "show") {
+                const startOverlay = document.getElementById('start-overlay');
+                if (startOverlay) startOverlay.style.visibility = 'hidden';
+            }
+            else if (messageId === "hide") {
+                const startOverlay = document.getElementById('start-overlay');
+                if (startOverlay) startOverlay.style.visibility = 'visible';
+            }
+        });
+
+        // Versuche zu verbinden
+        socket.connect();
+    } catch (error) {
+        console.log('Socket.IO nicht verfügbar - Fallback-Modus aktiv');
+        // Erstelle dummy socket
+        socket = {
+            emit: (event, data) => console.log(`[Fallback] Socket emit: ${event}`, data),
+            on: () => { },
+            connect: () => { },
+            disconnect: () => { }
+        };
+    }
 
     const startOverlay = document.getElementById('start-overlay');
-    startOverlay.style.visibility = 'visible'; // Schwarzbild bleibt oben
-
-    socket.on('ppMessage', (data) => {
-        console.log('[Socket.IO] Nachricht empfangen:', data);
-
-        if (!data || typeof data !== 'object') return;
-
-        const { messageId } = data;
-        console.log('[Socket.IO] messageId:', messageId);
-
-        if (messageId === "show") {
-            startOverlay.style.visibility = 'hidden'; // Schwarzbild ausblenden
-        }
-        else if (messageId === "hide") {
-            startOverlay.style.visibility = 'visible'; // Schwarzbild wieder anzeigen
-        }
-    });
-
+    if (startOverlay) startOverlay.style.visibility = 'visible'; // Schwarzbild bleibt oben
 
     // Erstelle ein Objekt für Spiegeldaten
     const mirrorData = {};
@@ -86,6 +690,45 @@ document.addEventListener('DOMContentLoaded', function () {
             angle: parseInt(mirror.dataset.angle),
             isRotatable: mirror.classList.contains('rotatable')
         };
+    });
+
+    // TEST-FUNKTIONALITÄT: Tastatur-Steuerung für Tests ohne Hardware
+    window.addEventListener('keydown', function (event) {
+        // Nur im Test-Modus (wenn Tutorial nicht aktiv ist)
+        if (!tutorialActive) {
+            switch (event.key.toLowerCase()) {
+                case 'l':
+                    console.log('🔦 [TEST] Laser manuell eingeschaltet');
+                    laserEnabled = true;
+                    if (laser) laser.style.opacity = '1';
+                    calculateLaserPath();
+                    break;
+                case 'q':
+                    mirror6Angle = (mirror6Angle + 5) % 360;
+                    setMirror6Angle(mirror6Angle);
+                    console.log(`🔄 [TEST] Mirror6: ${mirror6Angle}°`);
+                    break;
+                case 'a':
+                    mirror6Angle = (mirror6Angle - 5 + 360) % 360;
+                    setMirror6Angle(mirror6Angle);
+                    console.log(`🔄 [TEST] Mirror6: ${mirror6Angle}°`);
+                    break;
+                case 'w':
+                    mirror7Angle = (mirror7Angle + 5) % 360;
+                    setMirror7Angle(mirror7Angle);
+                    console.log(`🔄 [TEST] Mirror7: ${mirror7Angle}°`);
+                    break;
+                case 's':
+                    mirror7Angle = (mirror7Angle - 5 + 360) % 360;
+                    setMirror7Angle(mirror7Angle);
+                    console.log(`🔄 [TEST] Mirror7: ${mirror7Angle}°`);
+                    break;
+                case 't':
+                    console.log('🎯 [TEST] Tutorial manuell gestartet');
+                    startTutorial();
+                    break;
+            }
+        }
     });
 
     // Positioniere die Spiegel an festen Positionen
@@ -215,33 +858,31 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Erstelle Segmente, bis der Laser den Bildschirm verlässt oder das Prisma trifft
         let pathComplete = false;
-        const maxSegments = 20; // Sicherheitsgrenze
+        const maxSegments = 20;
         let segmentCount = 0;
 
         while (!pathComplete && segmentCount < maxSegments) {
-            // Finde Schnittpunkt mit nächstem Spiegel oder Prisma
             let nextIntersection = findNextIntersection(start, direction);
 
             if (nextIntersection) {
-                // Zeichne Lasersegment
                 drawLaserSegment(start, nextIntersection.point);
 
-                // Wenn wir das Prisma getroffen haben, beenden wir die Schleife
                 if (nextIntersection.type === 'prism') {
                     pathComplete = true;
+                    // Prisma getroffen - Tutorial-Schritt 7 auslösen
+                    if (tutorialStep >= 6) {
+                        showStep7();
+                    }
                     // Erfolgreich-Animation für das Prisma
                     prism.style.boxShadow = '0 0 20px 10px rgba(255, 100, 100, 1)';
                     setTimeout(() => {
                         prism.style.boxShadow = '0 0 15px rgba(255, 255, 255, 0.5)';
                     }, 1000);
                 } else {
-                    // Reflektiere die Richtung am Spiegel
                     direction = reflectDirection(direction, nextIntersection.angle);
-                    // Setze Startpunkt für nächstes Segment
                     start = nextIntersection.point;
                 }
             } else {
-                // Kein Schnittpunkt gefunden, Laser verlässt den Bildschirm
                 const screenEnd = extrapolateToScreenEdge(start, direction);
                 drawLaserSegment(start, screenEnd);
                 pathComplete = true;
@@ -552,14 +1193,13 @@ document.addEventListener('DOMContentLoaded', function () {
                 console.log('Automatisch mit ESP verbunden');
                 startReading();
             } else {
-                console.log('Kein zuvor verwendeter Port gefunden. Versuche, neuen Port anzufordern...');
-                // Falls kein Port gefunden, versuche automatisch zu verbinden
-                setTimeout(requestPortConnection, 2000);
+                console.log('Kein zuvor verwendeter Port gefunden.');
+                // Nicht mehr automatisch nach Port fragen
             }
         } catch (error) {
-            console.error('Fehler bei automatischer Verbindung:', error);
-            // Versuche es in 5 Sekunden erneut
-            setTimeout(autoConnectToESP, 5000);
+            console.log('ESP-Verbindung fehlgeschlagen - Test-Modus verfügbar');
+            // Weniger aggressiv versuchen
+            setTimeout(autoConnectToESP, 15000);
         }
     }
 
@@ -573,8 +1213,6 @@ document.addEventListener('DOMContentLoaded', function () {
             startReading();
         } catch (error) {
             console.error('Verbindung fehlgeschlagen:', error);
-            // Versuche es in 10 Sekunden erneut
-            setTimeout(autoConnectToESP, 10000);
         }
     }
 
@@ -659,7 +1297,6 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // ESP Steuerung auf Spiegel anwenden
-    // ESP Steuerung auf Spiegel anwenden
     function applyESPControlToMirrors(poti0Value, poti1Value) {
         // Potentiometer-Zuweisung getauscht:
         // Poti1 steuert Mirror6, Poti0 steuert Mirror7
@@ -674,7 +1311,6 @@ document.addEventListener('DOMContentLoaded', function () {
             setMirror7Angle(angle7);
         }
     }
-
 
     // Mapping-Funktionen für die verschiedenen Winkelbereiche
     // Eine Poti-Umdrehung = Eine Spiegel-Umdrehung (360°)
@@ -702,35 +1338,43 @@ document.addEventListener('DOMContentLoaded', function () {
             '*'
         );
 
-        // Socket.IO Nachricht senden
-        socket.emit("ppMessage", {
-            messageId: signalName,
-            fromName: "web app",
-            timestamp: Date.now(),
-        });
+        // Socket.IO Nachricht senden (mit Fallback)
+        if (socket && socket.emit) {
+            socket.emit("ppMessage", {
+                messageId: signalName,
+                fromName: "web app",
+                timestamp: Date.now(),
+            });
+        }
     }
-    // Hilfsfunktionen um Spiegel zu setzen
 
+    // Hilfsfunktionen um Spiegel zu setzen
     function setMirror6Angle(angle) {
         angle = ((angle % 360) + 360) % 360;
         mirror6Angle = angle;
         applyMirrorAngle(document.getElementById('mirror6'), angle);
+
+        // Tutorial-Schritt 4 auslösen (Laser-Erklärung)
+        if (tutorialStep === 3) {
+            showStep4();
+        }
 
         // Nur berechnen wenn Laser eingeschaltet ist
         if (laserEnabled) {
             calculateLaserPath();
         }
 
-        //console.log(`[Mirror6] Winkel: ${angle}°`);
+        // Prüfe ob Spiegel korrekt eingestellt (um 180°)
+        if (Math.abs(angle - 180) <= 5 && !mirror6Correct) {
+            mirror6Correct = true;
+            console.log('[Mirror6] Korrekt eingestellt!');
 
-        if (Math.abs(angle - 180) <= MIRROR_SIGNAL_TOLERANCE && !mirror6Aligned) {
-            console.log('[Mirror6] Richtiger Bereich um 180° – Signal wird gesendet!');
-            sendSignalToProtoPie('mirror6Aligned');
-            mirror6Aligned = true; // Signal nur einmal senden
-        }
-        else if (Math.abs(angle - 180) >= MIRROR_SIGNAL_TOLERANCE && mirror6Aligned) {
-            mirror6Aligned = false; // Reset, falls nicht im Bereich
-            sendSignalToProtoPie('mirror6NotAligned');
+            // Tutorial-Schritt 6 auslösen (zweiter Spiegel)
+            if (tutorialStep >= 4) {
+                showStep6();
+            }
+        } else if (Math.abs(angle - 180) > 5) {
+            mirror6Correct = false;
         }
     }
 
@@ -744,28 +1388,31 @@ document.addEventListener('DOMContentLoaded', function () {
             calculateLaserPath();
         }
 
-        //console.log(`[Mirror7] Winkel: ${angle}°`);
-
-        if (Math.abs(angle - 180) <= MIRROR_SIGNAL_TOLERANCE && !mirror7Aligned) {
-            console.log('[Mirror7] Richtiger Bereich um 180° – Signal wird gesendet!');
-            sendSignalToProtoPie('mirror7Aligned');
-            mirror7Aligned = true; // Signal nur einmal senden
-        }
-        else if (Math.abs(angle - 180) >= MIRROR_SIGNAL_TOLERANCE && mirror7Aligned) {
-            mirror7Aligned = false; // Reset, falls nicht im Bereich
-            sendSignalToProtoPie('mirror7NotAligned');
+        // Prüfe ob Spiegel korrekt eingestellt
+        if (Math.abs(angle - 180) <= 5 && !mirror7Correct) {
+            mirror7Correct = true;
+            console.log('[Mirror7] Korrekt eingestellt!');
+        } else if (Math.abs(angle - 180) > 5) {
+            mirror7Correct = false;
         }
     }
-
 
     // Fenster-Resize-Behandlung
     window.addEventListener('resize', function () {
         setupMirrors();
-        // calculateLaserPath();
     });
 
     // Initialisierung - Laser bleibt ausgeschaltet
     checkWebSerialSupport();
     setupMirrors();
-    // calculateLaserPath(); - Nicht mehr hier aufrufen, da Laser ausgeschaltet ist
+
+    // Zeige Testbefehle in der Konsole
+    console.log(`
+    🎮 TEST-BEFEHLE (nur ohne Tutorial aktiv):
+    • T = Tutorial starten
+    • L = Laser einschalten
+    • Q/A = Mirror6 drehen (+/-)
+    • W/S = Mirror7 drehen (+/-)
+    • Klick = Tutorial starten (wenn inaktiv)
+    `);
 });

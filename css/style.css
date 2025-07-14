@@ -263,3 +263,99 @@ select:focus {
     color: #4f9;
     font-weight: bold;
 }
+
+/* Tutorial Animationen */
+@keyframes fadeInOut {
+    0% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.8);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
+}
+
+@keyframes fadeOut {
+    0% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
+
+    100% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.8);
+    }
+}
+
+/* Neue Text-Animationen */
+@keyframes fadeInText {
+    0% {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeOutText {
+    0% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    100% {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+}
+
+/* Angepasstes Taschenlampen-Spotlight - kleiner */
+@keyframes flashlightPulse {
+    0% {
+        transform: scale(1);
+        opacity: 0.6;
+        box-shadow:
+            0 0 20px rgba(255, 255, 255, 0.4),
+            inset 0 0 15px rgba(255, 255, 255, 0.1);
+    }
+
+    50% {
+        transform: scale(1.05);
+        opacity: 0.8;
+        box-shadow:
+            0 0 25px rgba(255, 255, 255, 0.6),
+            inset 0 0 18px rgba(255, 255, 255, 0.15);
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 0.6;
+        box-shadow:
+            0 0 20px rgba(255, 255, 255, 0.4),
+            inset 0 0 15px rgba(255, 255, 255, 0.1);
+    }
+}
+
+/* Tutorial Text Styling - noch kleiner */
+.tutorial-text {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    text-align: left;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    font-size: 9px !important;
+    /* Sicherheitshalber mit !important */
+}
+
+/* Spotlight und Pfeile */
+.spotlight {
+    user-select: none;
+}
+
+/* Entferne Pfeil-Styling (nicht mehr verwendet) */
+.rotation-arrow {
+    display: none;
+}
