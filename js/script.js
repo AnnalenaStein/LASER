@@ -166,19 +166,20 @@ document.addEventListener('DOMContentLoaded', function () {
         textElement.className = 'tutorial-text';
         textElement.innerHTML = text;
 
-        // Styling für den Text - HALBE GRÖßE
+        // Styling für den Text - HALBE GRÖßE mit Noway-Medium
         textElement.style.position = 'fixed';
         textElement.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
         textElement.style.color = '#fff';
-        textElement.style.padding = '8px 12px'; // Reduziert von 15px 25px
-        textElement.style.borderRadius = '4px'; // Reduziert von 8px
-        textElement.style.fontSize = '9px'; // Reduziert von 18px auf die Hälfte
+        textElement.style.padding = '8px 12px';
+        textElement.style.borderRadius = '4px';
+        textElement.style.fontSize = '12px'; // Geändert von '9px' auf '12px'
+        textElement.style.fontFamily = "'Noway-Medium', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif";
         textElement.style.fontWeight = 'normal';
         textElement.style.textAlign = 'left';
-        textElement.style.lineHeight = '1.3'; // Leicht reduziert von 1.4
-        textElement.style.maxWidth = '150px'; // Reduziert von 300px
+        textElement.style.lineHeight = '1.3';
+        textElement.style.maxWidth = '150px';
         textElement.style.zIndex = '2000';
-        textElement.style.boxShadow = '0 2px 6px rgba(0, 0, 0, 0.3)'; // Reduziert von 0 4px 12px
+        textElement.style.boxShadow = '0 2px 6px rgba(0, 0, 0, 0.3)';
         textElement.style.animation = 'fadeInText 0.5s ease-in';
 
         // Positionierung je nach Parameter
@@ -337,190 +338,20 @@ document.addEventListener('DOMContentLoaded', function () {
         textElement.className = 'tutorial-text';
         textElement.innerHTML = text;
 
-        // Styling für den Text - HALBE GRÖßE
+        // Styling für den Text - HALBE GRÖßE mit Noway-Medium
         textElement.style.position = 'fixed';
         textElement.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
         textElement.style.color = '#fff';
-        textElement.style.padding = '8px 12px'; // Reduziert von 15px 25px
-        textElement.style.borderRadius = '4px'; // Reduziert von 8px
-        textElement.style.fontSize = '9px'; // Reduziert von 18px auf die Hälfte
+        textElement.style.padding = '8px 12px';
+        textElement.style.borderRadius = '4px';
+        textElement.style.fontSize = '12px'; // Geändert von '9px' auf '12px'
+        textElement.style.fontFamily = "'Noway-Medium', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif";
         textElement.style.fontWeight = 'normal';
         textElement.style.textAlign = 'left';
-        textElement.style.lineHeight = '1.3'; // Leicht reduziert von 1.4
-        textElement.style.maxWidth = '150px'; // Reduziert von 300px
+        textElement.style.lineHeight = '1.3';
+        textElement.style.maxWidth = '150px';
         textElement.style.zIndex = '2000';
-        textElement.style.boxShadow = '0 2px 6px rgba(0, 0, 0, 0.3)'; // Reduziert von 0 4px 12px
-        textElement.style.animation = 'fadeInText 0.5s ease-in';
-
-        // Positionierung je nach Parameter
-        if (position === 'top-right') {
-            textElement.style.top = '10px'; // Reduziert von 20px
-            textElement.style.right = '10px'; // Reduziert von 20px
-        } else if (position === 'mirror-right') {
-            // Position wird dynamisch gesetzt
-        }
-
-        // Füge Text zum DOM hinzu
-        document.body.appendChild(textElement);
-
-        // Entferne Text nach angegebener Zeit und rufe Callback auf
-        setTimeout(() => {
-            if (textElement.parentNode) {
-                textElement.style.animation = 'fadeOutText 0.5s ease-out';
-                setTimeout(() => {
-                    textElement.remove();
-                    if (callback) callback();
-                }, 500);
-            }
-        }, duration);
-
-        return textElement;
-    }
-
-    // Spezielle Funktion für Spiegel-bezogene Texte
-    function showMirrorText(text, duration, mirrorId, callback) {
-        const mirror = document.getElementById(mirrorId);
-        if (!mirror) return;
-
-        const textElement = showTutorialText(text, duration, callback, 'mirror-right');
-
-        // Positioniere rechts vom Spiegel - mit reduziertem Abstand
-        const mirrorRect = mirror.getBoundingClientRect();
-        textElement.style.left = `${mirrorRect.right + 15}px`; // Reduziert von 30px
-        textElement.style.top = `${mirrorRect.top - 5}px`; // Reduziert von -10px
-    }
-
-    // Spotlight erstellen - KLEINERES Design
-    function createSpotlight(mirrorId) {
-        const mirror = document.getElementById(mirrorId);
-        if (!mirror) return;
-
-        // Entferne vorhandene Spotlights
-        const existingSpotlights = document.querySelectorAll('.spotlight');
-        existingSpotlights.forEach(spot => spot.remove());
-
-        const spotlight = document.createElement('div');
-        spotlight.className = 'spotlight';
-        spotlight.style.position = 'absolute';
-        spotlight.style.width = '120px'; // Reduziert von 200px
-        spotlight.style.height = '120px'; // Reduziert von 200px
-        spotlight.style.borderRadius = '50%';
-
-        // Natürliches weißes Licht wie Taschenlampe
-        spotlight.style.background = `
-            radial-gradient(circle, 
-                rgba(255, 255, 255, 0.4) 0%, 
-                rgba(255, 255, 255, 0.2) 40%, 
-                rgba(255, 255, 255, 0.1) 60%, 
-                rgba(255, 255, 255, 0.05) 80%, 
-                transparent 100%
-            )
-        `;
-
-        spotlight.style.border = '1px solid rgba(255, 255, 255, 0.3)'; // Reduziert von 2px
-        spotlight.style.boxShadow = `
-            0 0 20px rgba(255, 255, 255, 0.4),
-            inset 0 0 15px rgba(255, 255, 255, 0.1)
-        `; // Reduzierte Schatten: 30px->20px, 20px->15px
-        spotlight.style.animation = 'flashlightPulse 3s infinite ease-in-out';
-        spotlight.style.zIndex = '100';
-        spotlight.style.pointerEvents = 'none';
-
-        // Positioniere Spotlight über dem Spiegel - angepasst für kleinere Größe
-        const mirrorRect = mirror.getBoundingClientRect();
-        spotlight.style.left = `${mirrorRect.left + mirrorRect.width / 2 - 60}px`; // Reduziert von -100px
-        spotlight.style.top = `${mirrorRect.top + mirrorRect.height / 2 - 60}px`; // Reduziert von -100px
-
-        document.body.appendChild(spotlight);
-    }
-
-    // Schritt 4: Laser-Erklärung (wird ausgelöst wenn Mirror6 bewegt wird)
-    function showStep4() {
-        if (tutorialStep !== 3) return;
-        tutorialStep = 4;
-
-        showTutorialText(
-            'Bei einem Laser haben alle Lichtteilchen dieselbe Farbe, Richtung und Schwingung.<br><br>Das macht den Strahl stark und präzise.',
-            4000,
-            showStep5,
-            'top-right'
-        );
-    }
-
-    // Schritt 5: Zusatzinfo
-    function showStep5() {
-        tutorialStep = 5;
-        showTutorialText(
-            'So stark, dass er Metall schneiden oder Daten durch Glasfasern senden kann.',
-            3000,
-            null,
-            'top-right'
-        );
-    }
-
-    // Schritt 6: Zweiter Spiegel (wird ausgelöst wenn Mirror6 korrekt)
-    function showStep6() {
-        tutorialStep = 6;
-
-        // Entferne Spotlight von Mirror6
-        removeSpotlight('mirror6');
-
-        // Spotlight auf Mirror7 (linken bewegbaren Spiegel)
-        createSpotlight('mirror7');
-
-        // Text rechts vom Spiegel
-        showMirrorText(
-            'Lenke den Strahl auf das Prisma',
-            3000,
-            'mirror7'
-        );
-    }
-
-    // Schritt 7: Erfolg
-    function showStep7() {
-        tutorialStep = 7;
-
-        // Entferne alle Spotlights
-        removeSpotlight('mirror7');
-
-        showTutorialText(
-            'Super!',
-            2000,
-            completeTutorial,
-            'top-right'
-        );
-    }
-
-    // Tutorial beenden
-    function completeTutorial() {
-        tutorialActive = false;
-        console.log('[Tutorial] Abgeschlossen!');
-    }
-
-    // Allgemeine Funktion für Tutorial-Texte
-    function showTutorialText(text, duration, callback, position = 'top-right') {
-        // Entferne vorhandene Texte
-        const existingTexts = document.querySelectorAll('.tutorial-text');
-        existingTexts.forEach(text => text.remove());
-
-        // Erstelle Text-Element
-        const textElement = document.createElement('div');
-        textElement.className = 'tutorial-text';
-        textElement.innerHTML = text;
-
-        // Styling für den Text - HALBE GRÖßE
-        textElement.style.position = 'fixed';
-        textElement.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
-        textElement.style.color = '#fff';
-        textElement.style.padding = '8px 12px'; // Reduziert von 15px 25px
-        textElement.style.borderRadius = '4px'; // Reduziert von 8px
-        textElement.style.fontSize = '9px'; // Reduziert von 18px auf die Hälfte
-        textElement.style.fontWeight = 'normal';
-        textElement.style.textAlign = 'left';
-        textElement.style.lineHeight = '1.3'; // Leicht reduziert von 1.4
-        textElement.style.maxWidth = '150px'; // Reduziert von 300px
-        textElement.style.zIndex = '2000';
-        textElement.style.boxShadow = '0 2px 6px rgba(0, 0, 0, 0.3)'; // Reduziert von 0 4px 12px
+        textElement.style.boxShadow = '0 2px 6px rgba(0, 0, 0, 0.3)';
         textElement.style.animation = 'fadeInText 0.5s ease-in';
 
         // Positionierung je nach Parameter

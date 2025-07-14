@@ -4,15 +4,15 @@ body {
     background-color: #000;
     height: 100vh;
     overflow: hidden;
-    font-family: Arial, sans-serif;
-    font-family: 'Noway-Medium', sans-serif;
+    font-family: 'Noway-Medium', 'Segoe UI', Arial, sans-serif;
 }
 
 @font-face {
     font-family: 'Noway-Medium';
-    src: url('./fonts/Noway-Medium.otf') format('opentype');
+    src: url('../fonts/Noway Complete + Icons/Noway-Medium.otf') format('opentype');
     font-weight: normal;
     font-style: normal;
+    font-display: swap;
 }
 
 .container {
@@ -271,6 +271,7 @@ select:focus {
     color: #4f9;
     font-weight: bold;
 }
+
 /* Tutorial Animationen */
 @keyframes fadeInOut {
     0% {
@@ -348,13 +349,13 @@ select:focus {
     }
 }
 
-/* Tutorial Text Styling - noch kleiner */
+/* Tutorial Text Styling - mit Noway-Medium */
 .tutorial-text {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Noway-Medium', 'Segoe UI', Arial, sans-serif !important;
     text-align: left;
     border: 1px solid rgba(255, 255, 255, 0.2);
-    font-size: 9px !important;
-    /* Sicherheitshalber mit !important */
+    font-size: 12px !important;
+    font-weight: normal;
 }
 
 /* Spotlight und Pfeile */
