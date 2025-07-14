@@ -232,34 +232,37 @@ document.addEventListener('DOMContentLoaded', function () {
         const spotlight = document.createElement('div');
         spotlight.className = 'spotlight';
         spotlight.style.position = 'absolute';
-        spotlight.style.width = '120px'; // Reduziert von 200px
-        spotlight.style.height = '120px'; // Reduziert von 200px
+        spotlight.style.width = '120px';
+        spotlight.style.height = '120px';
         spotlight.style.borderRadius = '50%';
 
-        // Natürliches weißes Licht wie Taschenlampe
+        // HELLERES weißes Licht - Intensität erhöht
         spotlight.style.background = `
             radial-gradient(circle, 
-                rgba(255, 255, 255, 0.4) 0%, 
-                rgba(255, 255, 255, 0.2) 40%, 
-                rgba(255, 255, 255, 0.1) 60%, 
-                rgba(255, 255, 255, 0.05) 80%, 
+                rgba(255, 255, 255, 0.7) 0%,    /* Erhöht von 0.4 auf 0.7 */
+                rgba(255, 255, 255, 0.5) 40%,   /* Erhöht von 0.2 auf 0.5 */
+                rgba(255, 255, 255, 0.3) 60%,   /* Erhöht von 0.1 auf 0.3 */
+                rgba(255, 255, 255, 0.15) 80%,  /* Erhöht von 0.05 auf 0.15 */
                 transparent 100%
             )
         `;
 
-        spotlight.style.border = '1px solid rgba(255, 255, 255, 0.3)'; // Reduziert von 2px
+        spotlight.style.border = '2px solid rgba(255, 255, 255, 0.6)'; /* Erhöht von 1px/0.3 auf 2px/0.6 */
         spotlight.style.boxShadow = `
-            0 0 20px rgba(255, 255, 255, 0.4),
-            inset 0 0 15px rgba(255, 255, 255, 0.1)
-        `; // Reduzierte Schatten: 30px->20px, 20px->15px
-        spotlight.style.animation = 'flashlightPulse 3s infinite ease-in-out';
+            0 0 40px rgba(255, 255, 255, 0.8),    /* Erhöht von 20px/0.4 auf 40px/0.8 */
+            inset 0 0 30px rgba(255, 255, 255, 0.4) /* Erhöht von 15px/0.1 auf 30px/0.4 */
+        `;
         spotlight.style.zIndex = '100';
+        spotlight.style.animation = 'flashlightPulse 2s ease-in-out infinite';
         spotlight.style.pointerEvents = 'none';
+        spotlight.style.filter = 'brightness(1.3)'; /* Zusätzliche Helligkeit */
 
-        // Positioniere Spotlight über dem Spiegel - angepasst für kleinere Größe
+        // Positioniere den Spotlight über dem Spiegel
         const mirrorRect = mirror.getBoundingClientRect();
-        spotlight.style.left = `${mirrorRect.left + mirrorRect.width / 2 - 60}px`; // Reduziert von -100px
-        spotlight.style.top = `${mirrorRect.top + mirrorRect.height / 2 - 60}px`; // Reduziert von -100px
+        const spotlightSize = 120;
+
+        spotlight.style.left = `${mirrorRect.left + mirrorRect.width / 2 - spotlightSize / 2}px`;
+        spotlight.style.top = `${mirrorRect.top + mirrorRect.height / 2 - spotlightSize / 2}px`;
 
         document.body.appendChild(spotlight);
     }
@@ -404,34 +407,37 @@ document.addEventListener('DOMContentLoaded', function () {
         const spotlight = document.createElement('div');
         spotlight.className = 'spotlight';
         spotlight.style.position = 'absolute';
-        spotlight.style.width = '120px'; // Reduziert von 200px
-        spotlight.style.height = '120px'; // Reduziert von 200px
+        spotlight.style.width = '120px';
+        spotlight.style.height = '120px';
         spotlight.style.borderRadius = '50%';
 
-        // Natürliches weißes Licht wie Taschenlampe
+        // HELLERES weißes Licht - Intensität erhöht
         spotlight.style.background = `
             radial-gradient(circle, 
-                rgba(255, 255, 255, 0.4) 0%, 
-                rgba(255, 255, 255, 0.2) 40%, 
-                rgba(255, 255, 255, 0.1) 60%, 
-                rgba(255, 255, 255, 0.05) 80%, 
+                rgba(255, 255, 255, 0.7) 0%,    /* Erhöht von 0.4 auf 0.7 */
+                rgba(255, 255, 255, 0.5) 40%,   /* Erhöht von 0.2 auf 0.5 */
+                rgba(255, 255, 255, 0.3) 60%,   /* Erhöht von 0.1 auf 0.3 */
+                rgba(255, 255, 255, 0.15) 80%,  /* Erhöht von 0.05 auf 0.15 */
                 transparent 100%
             )
         `;
 
-        spotlight.style.border = '1px solid rgba(255, 255, 255, 0.3)'; // Reduziert von 2px
+        spotlight.style.border = '2px solid rgba(255, 255, 255, 0.6)'; /* Erhöht von 1px/0.3 auf 2px/0.6 */
         spotlight.style.boxShadow = `
-            0 0 20px rgba(255, 255, 255, 0.4),
-            inset 0 0 15px rgba(255, 255, 255, 0.1)
-        `; // Reduzierte Schatten: 30px->20px, 20px->15px
-        spotlight.style.animation = 'flashlightPulse 3s infinite ease-in-out';
+            0 0 40px rgba(255, 255, 255, 0.8),    /* Erhöht von 20px/0.4 auf 40px/0.8 */
+            inset 0 0 30px rgba(255, 255, 255, 0.4) /* Erhöht von 15px/0.1 auf 30px/0.4 */
+        `;
         spotlight.style.zIndex = '100';
+        spotlight.style.animation = 'flashlightPulse 2s ease-in-out infinite';
         spotlight.style.pointerEvents = 'none';
+        spotlight.style.filter = 'brightness(1.3)'; /* Zusätzliche Helligkeit */
 
-        // Positioniere Spotlight über dem Spiegel - angepasst für kleinere Größe
+        // Positioniere den Spotlight über dem Spiegel
         const mirrorRect = mirror.getBoundingClientRect();
-        spotlight.style.left = `${mirrorRect.left + mirrorRect.width / 2 - 60}px`; // Reduziert von -100px
-        spotlight.style.top = `${mirrorRect.top + mirrorRect.height / 2 - 60}px`; // Reduziert von -100px
+        const spotlightSize = 120;
+
+        spotlight.style.left = `${mirrorRect.left + mirrorRect.width / 2 - spotlightSize / 2}px`;
+        spotlight.style.top = `${mirrorRect.top + mirrorRect.height / 2 - spotlightSize / 2}px`;
 
         document.body.appendChild(spotlight);
     }
