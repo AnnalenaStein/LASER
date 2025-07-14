@@ -1,5 +1,23 @@
 document.addEventListener('DOMContentLoaded', function () {
 
+    let whiteBeam;
+    let rainbowBeam;
+
+
+    // Lichtkegel und Regenbogen DOM-Elemente hinzufügen
+    whiteBeam = document.createElement('div');
+    whiteBeam.id = 'white-lightbeam';
+    document.body.appendChild(whiteBeam);
+
+    rainbowBeam = document.createElement('div');
+    rainbowBeam.id = 'rainbow-beam';
+    document.body.appendChild(rainbowBeam);
+
+    const testRainbow = document.getElementById('rainbow-beam');
+    console.log('🌈 Regenbogen gefunden?', testRainbow);
+    
+
+
     // Finde alle nötigen Elemente
     const mirrors = document.querySelectorAll('.mirror');
     const laser = document.getElementById('laser1');
@@ -526,41 +544,55 @@ document.addEventListener('DOMContentLoaded', function () {
     // TEST-FUNKTIONALITÄT: Tastatur-Steuerung für Tests ohne Hardware
     window.addEventListener('keydown', function (event) {
         // Nur im Test-Modus (wenn Tutorial nicht aktiv ist)
-        if (!tutorialActive) {
-            switch (event.key.toLowerCase()) {
-                case 'l':
-                    console.log('🔦 [TEST] Laser manuell eingeschaltet');
-                    laserEnabled = true;
-                    if (laser) laser.style.opacity = '1';
-                    calculateLaserPath();
-                    break;
-                case 'q':
-                    mirror6Angle = (mirror6Angle + 5) % 360;
-                    setMirror6Angle(mirror6Angle);
-                    console.log(`🔄 [TEST] Mirror6: ${mirror6Angle}°`);
-                    break;
-                case 'a':
-                    mirror6Angle = (mirror6Angle - 5 + 360) % 360;
-                    setMirror6Angle(mirror6Angle);
-                    console.log(`🔄 [TEST] Mirror6: ${mirror6Angle}°`);
-                    break;
-                case 'w':
-                    mirror7Angle = (mirror7Angle + 5) % 360;
-                    setMirror7Angle(mirror7Angle);
-                    console.log(`🔄 [TEST] Mirror7: ${mirror7Angle}°`);
-                    break;
-                case 's':
-                    mirror7Angle = (mirror7Angle - 5 + 360) % 360;
-                    setMirror7Angle(mirror7Angle);
-                    console.log(`🔄 [TEST] Mirror7: ${mirror7Angle}°`);
-                    break;
-                case 't':
-                    console.log('🎯 [TEST] Tutorial manuell gestartet');
-                    startTutorial();
-                    break;
-            }
+        // if (!tutorialActive) {
+        switch (event.key.toLowerCase()) {
+            case 'l':
+                console.log('🔦 [TEST] Laser manuell eingeschaltet');
+                laserEnabled = true;
+                if (laser) laser.style.opacity = '1';
+                calculateLaserPath();
+                break;
+            case 'q':
+                mirror6Angle = (mirror6Angle + 5) % 360;
+                setMirror6Angle(mirror6Angle);
+                console.log(`🔄 [TEST] Mirror6: ${mirror6Angle}°`);
+                break;
+            case 'a':
+                mirror6Angle = (mirror6Angle - 5 + 360) % 360;
+                setMirror6Angle(mirror6Angle);
+                console.log(`🔄 [TEST] Mirror6: ${mirror6Angle}°`);
+                break;
+            case 'w':
+                mirror7Angle = (mirror7Angle + 5) % 360;
+                setMirror7Angle(mirror7Angle);
+                console.log(`🔄 [TEST] Mirror7: ${mirror7Angle}°`);
+                break;
+            case 's':
+                mirror7Angle = (mirror7Angle - 5 + 360) % 360;
+                setMirror7Angle(mirror7Angle);
+                console.log(`🔄 [TEST] Mirror7: ${mirror7Angle}°`);
+                break;
+            case 't':
+                console.log('🎯 [TEST] Tutorial manuell gestartet');
+                startTutorial();
+                break;
+            // case 'j':
+            //     if (!beamVisible) {
+            //         const prismTop = prism.offsetTop;
+            //         const prismCenterX = prism.offsetLeft + prism.offsetWidth / 2;
+            //         const beamHeight = window.innerHeight - prismTop;
+
+            //         whiteBeam.style.left = `${prismCenterX - 30}px`;
+            //         whiteBeam.style.height = `${beamHeight}px`;
+            //         beamVisible = true;
+                    
+            //     }
+            //     break;
+
         }
+        // }
     });
+
 
     // Positioniere die Spiegel an festen Positionen
     function setupMirrors() {
@@ -695,32 +727,51 @@ document.addEventListener('DOMContentLoaded', function () {
         while (!pathComplete && segmentCount < maxSegments) {
             let nextIntersection = findNextIntersection(start, direction);
 
-            if (nextIntersection) {
-                drawLaserSegment(start, nextIntersection.point);
-
-                if (nextIntersection.type === 'prism') {
-                    pathComplete = true;
-                    // Prisma getroffen - Tutorial-Schritt 7 auslösen
-                    if (tutorialStep >= 6) {
-                        showStep7();
-                    }
-                    // Erfolgreich-Animation für das Prisma
-                    prism.style.boxShadow = '0 0 20px 10px rgba(255, 100, 100, 1)';
-                    setTimeout(() => {
-                        prism.style.boxShadow = '0 0 15px rgba(255, 255, 255, 0.5)';
-                    }, 1000);
-                } else {
-                    direction = reflectDirection(direction, nextIntersection.angle);
-                    start = nextIntersection.point;
-                }
-            } else {
-                const screenEnd = extrapolateToScreenEdge(start, direction);
-                drawLaserSegment(start, screenEnd);
+            if (nextIntersection.type === 'prism') {
+                // Lichtkegel anzeigen
+                const prism = document.getElementById('prism1');
+                const prismRect = prism.getBoundingClientRect();
+                
+                rainbowBeam.style.left = `${prismRect.right}px`;  // oder centerX
+                rainbowBeam.style.top = `${prismRect.top + prismRect.height / 2}px`;
+                rainbowBeam.style.transform = 'rotate(30deg)';  // Brechungswinkel
+                rainbowBeam.style.opacity = '1';
+                
+                const prismCenterX = prism.offsetLeft + prism.offsetWidth / 2;
+                const beamHeight = window.innerHeight - prismTop;
+                rainbowBeam.style.left = `${prismCenterX - 60}px`;
+                rainbowBeam.style.top = `${prismTop - 180}px`; // leicht anpassen
+                rainbowBeam.style.transform = 'rotate(0deg)';
+                
+                whiteBeam.style.height = `${beamHeight}px`;
+            
+                // Regenbogen anzeigen
+                rainbowBeam.style.left = `${prismCenterX - 60}px`;
+                rainbowBeam.style.top = `${prismTop - 200}px`;
+                rainbowBeam.style.opacity = '1';
+            
+                // Schritt abgeschlossen
                 pathComplete = true;
+        
+                // Prisma getroffen - Tutorial-Schritt 7 auslösen
+                if (tutorialStep >= 6) {
+                    showStep7();
+                }
+
+                // Erfolgreich-Animation für das Prisma
+                prism.style.boxShadow = '0 0 20px 10px rgba(255, 100, 100, 1)';
+                setTimeout(() => {
+                    prism.style.boxShadow = '0 0 15px rgba(255, 255, 255, 0.5)';
+                }, 1000);
+
+            } else {
+                direction = reflectDirection(direction, nextIntersection.angle);
+                start = nextIntersection.point;
             }
 
             segmentCount++;
         }
+
     }
 
     // Finde den nächsten Schnittpunkt mit einem Spiegel oder dem Prisma
