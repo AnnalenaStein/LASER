@@ -8,30 +8,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Tutorial-Status Variablen
     let tutorialStep = 0;
-    let laserEnabled = false;
+    let laserEnabled = true;
     let tutorialActive = false;
     let mirror6Correct = false;
     let mirror7Correct = false;
 
-    // Event Listener für ProtoPie und Test-Klick
-    window.addEventListener('message', function (event) {
-        console.log('[Debug] Raw Message empfangen:', event.data);
-
-        if (event.data && event.data.type === 'protopie') {
-            if (event.data.action === 'show') {
-                console.log('[ProtoPie] show empfangen - Tutorial startet');
-                startTutorial();
-            }
-            if (event.data.action === 'hide') {
-                console.log('[ProtoPie] hide empfangen - Laser wird eingeschaltet');
-                laserEnabled = true;
-                if (laser) {
-                    laser.style.opacity = '1';
-                }
-                calculateLaserPath();
-            }
-        }
-    });
 
     // Test-Klick um Tutorial zu starten (ohne ProtoPie)
     document.addEventListener('click', function (event) {
@@ -43,25 +24,37 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Tutorial starten
     function startTutorial() {
-        tutorialActive = true;
-        const overlay = document.getElementById('start-overlay');
-        if (overlay) overlay.style.visibility = 'hidden';
+        console.log('[DEBUG] startTutorial() wird ausgeführt');
+        console.log('[DEBUG] tutorialActive:', tutorialActive, 'tutorialStep:', tutorialStep);
 
-        showStep1();
+        tutorialActive = true;
+        tutorialStep = 0;
+
+        const overlay = document.getElementById('start-overlay');
+        if (overlay) {
+            overlay.style.visibility = 'hidden';
+            console.log('[DEBUG] Overlay versteckt');
+        }
+
+        showStep1(); // <<<<<<<<<<<<<< direkt testen
     }
+
+
 
     // Schritt 1: Erklärungstext
     function showStep1() {
         tutorialStep = 1;
+        console.log('[DEBUG] showStep1() aufgerufen');
+
         showTutorialText(
-            `Lenke den Strahl von Spiegel zu Spiegel auf das Prisma.<br><br>
-            Laserlicht wird im gleichen Winkel reflektiert:<br>
+            `Laserlicht wird im gleichen Winkel reflektiert:<br>
             <strong>Einfallswinkel = Ausfallswinkel</strong>`,
             4000,
             showStep2,
             'top-right'
         );
     }
+
 
     // Schritt 2: Erste Spiegelanweisung
     function showStep2() {
@@ -267,6 +260,27 @@ document.addEventListener('DOMContentLoaded', function () {
         document.body.appendChild(spotlight);
     }
 
+    function removeSpotlight(mirrorId) {
+        const mirror = document.getElementById(mirrorId);
+        if (!mirror) return;
+    
+        // Finde Spotlight in Nähe des Spiegels (basierend auf Position)
+        const spotlights = document.querySelectorAll('.spotlight');
+        spotlights.forEach(spotlight => {
+            const rect = spotlight.getBoundingClientRect();
+            const mirrorRect = mirror.getBoundingClientRect();
+    
+            const dx = rect.left - mirrorRect.left;
+            const dy = rect.top - mirrorRect.top;
+    
+            // Wenn Spotlight ungefähr über dem Spiegel liegt – löschen
+            if (Math.abs(dx) < 150 && Math.abs(dy) < 150) {
+                spotlight.remove();
+            }
+        });
+    }
+    
+
     // Schritt 4: Laser-Erklärung (wird ausgelöst wenn Mirror6 bewegt wird)
     function showStep4() {
         if (tutorialStep !== 3) return;
@@ -468,6 +482,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     let MIRROR_SIGNAL_TOLERANCE = 2;
 
+
     // Socket.IO mit Fehlerbehandlung
     let socket;
     try {
@@ -495,7 +510,13 @@ document.addEventListener('DOMContentLoaded', function () {
             if (messageId === "show") {
                 const startOverlay = document.getElementById('start-overlay');
                 if (startOverlay) startOverlay.style.visibility = 'hidden';
+
+                if (!tutorialActive && tutorialStep === 0) {
+                    console.log('[Socket] Starte Tutorial durch show');
+                    startTutorial();
+                }
             }
+
             else if (messageId === "hide") {
                 const startOverlay = document.getElementById('start-overlay');
                 if (startOverlay) startOverlay.style.visibility = 'visible';
@@ -515,6 +536,29 @@ document.addEventListener('DOMContentLoaded', function () {
         };
     }
 
+    socket.on('protopie', function (data) {
+        console.log('[Socket.io] Nachricht empfangen:', data);
+
+        if (data && data.type === 'protopie') {
+            if (data.action === 'show') {
+                console.log('[ProtoPie] show empfangen - Tutorial startet (erzwungen)');
+                tutorialActive = false;
+                tutorialStep = 0;
+                startTutorial();
+            }
+
+            if (data.action === 'hide') {
+                console.log('[ProtoPie] hide empfangen - Laser wird eingeschaltet');
+                laserEnabled = true;
+                if (laser) {
+                    laser.style.opacity = '1';
+                }
+                calculateLaserPath();
+            }
+        }
+    });
+
+
     const startOverlay = document.getElementById('start-overlay');
     if (startOverlay) startOverlay.style.visibility = 'visible'; // Schwarzbild bleibt oben
 
@@ -532,7 +576,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // TEST-FUNKTIONALITÄT: Tastatur-Steuerung für Tests ohne Hardware
     window.addEventListener('keydown', function (event) {
         // Nur im Test-Modus (wenn Tutorial nicht aktiv ist)
-        if (!tutorialActive) {
+        if (tutorialActive) {
             switch (event.key.toLowerCase()) {
                 case 'l':
                     console.log('🔦 [TEST] Laser manuell eingeschaltet');

@@ -9,6 +9,14 @@
 </head>
 
 <body>
+    <!-- Optional: Schwarzbild beim Start -->
+    <div id="start-overlay" style="
+position: fixed;
+inset: 0;
+background-color: black;
+z-index: 9999;
+visibility: visible;
+"></div>
     <div class="container">
 
         <!-- Fixe Spiegel mit definierten Winkeln -->
@@ -41,15 +49,6 @@
     </div>
     <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
     <script src="js/script.js"></script>
-
-    <!-- Optional: Schwarzbild beim Start -->
-    <div id="start-overlay" style="
-position: fixed;
-inset: 0;
-background-color: black;
-z-index: 9999;
-visibility: visible;
-"></div>
 
 
 </body>
