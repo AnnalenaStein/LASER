@@ -763,7 +763,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 drawLaserSegment(start, nextIntersection.point);
 
                 if (nextIntersection.type === 'prism') {
-                    pathComplete = false;
+                    drawLaserSegment(start, nextIntersection.point);
+
+                    // Laserstrahl soll weitergehen – also:
+                    start = nextIntersection.point;
 
                     // HINZUGEFÜGT: Prisma getroffen - Nachricht an ProtoPie senden
                     sendPrismaHitSignal();
