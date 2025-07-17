@@ -804,6 +804,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             segmentCount++;
         }
+        }
 
         // HINZUGEFÜGT: Funktion um Prisma-Treffer an ProtoPie zu melden
         function sendPrismaHitSignal() {
