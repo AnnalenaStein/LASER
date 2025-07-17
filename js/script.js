@@ -57,7 +57,7 @@ document.addEventListener('DOMContentLoaded', function () {
         showTutorialText(
             `Laserlicht wird im gleichen Winkel reflektiert:<br>
             <strong>Einfallswinkel = Ausfallswinkel</strong>`,
-            4000,
+            8000,
             showStep2,
             'top-right'
         );
@@ -69,7 +69,7 @@ document.addEventListener('DOMContentLoaded', function () {
         tutorialStep = 2;
         showTutorialText(
             'Stelle den Spiegel so ein, dass der Laser zum nächsten Spiegel trifft.',
-            3000,
+            6000,
             showStep3,
             'top-right'
         );
@@ -99,8 +99,8 @@ document.addEventListener('DOMContentLoaded', function () {
         tutorialStep = 4;
 
         showTutorialText(
-            'Bei einem Laser haben alle Lichtteilchen dieselbe Farbe, Richtung und Schwingung.<br><br>Das macht den Strahl stark und präzise.',
-            4000,
+            'Bei einem Laser haben alle Lichtteilchen dieselbe Farbe, Richtung und Schwingung.',
+            9000,
             showStep5,
             'top-right'
         );
@@ -110,8 +110,8 @@ document.addEventListener('DOMContentLoaded', function () {
     function showStep5() {
         tutorialStep = 5;
         showTutorialText(
-            'So stark, dass er Metall schneiden oder Daten durch Glasfasern senden kann.',
-            3000,
+            'Das macht den Strahl stark und präzise. <br><br> So stark, dass er Metall schneiden oder Daten durch Glasfasern senden kann.',
+            8000,
             null,
             'top-right'
         );
@@ -704,6 +704,10 @@ document.addEventListener('DOMContentLoaded', function () {
             mirror.style.transform = `rotate(${angle}deg)`;
         }
 
+        if (mirror.dataset) {
+            mirror.dataset.angle = angle.toString();
+        }
+
         if (mirrorData[mirror.id]) {
             mirrorData[mirror.id].angle = angle;
         }
@@ -765,6 +769,16 @@ document.addEventListener('DOMContentLoaded', function () {
                     // Prisma getroffen - Tutorial-Schritt 7 auslösen
                     if (tutorialStep >= 6) {
                         showStep7();
+
+                        // ✅ NEU: Signal an ProtoPie senden
+                        if (socket && socket.connected) {
+                            socket.emit('ppMessage', {
+                                messageId: 'mirror7Aligned',
+                                fromName: 'Laser Tutorial',
+                                timestamp: Date.now()
+                            });
+                            console.log('✅ Signal "mirror7Aligned" an ProtoPie gesendet');
+                        }
                     }
                     // Erfolgreich-Animation für das Prisma
                     prism.style.boxShadow = '0 0 20px 10px rgba(255, 100, 100, 1)';
@@ -1341,8 +1355,27 @@ document.addEventListener('DOMContentLoaded', function () {
         if (Math.abs(angle - 180) <= 5 && !mirror7Correct) {
             mirror7Correct = true;
             console.log('[Mirror7] Korrekt eingestellt!');
+            checkMirror7Alignment();
         } else if (Math.abs(angle - 180) > 5) {
             mirror7Correct = false;
+        }
+    }
+
+    function checkMirror7Alignment() {
+        const mirror7 = document.getElementById('mirror7');
+        if (!mirror7) return;
+
+        const angle = parseInt(mirror7.dataset.angle);
+        if (angle === 180) {
+            console.log('✅ Mirror7 korrekt ausgerichtet');
+
+            if (socket && socket.connected) {
+                socket.emit('ppMessage', {
+                    messageId: 'mirror7Aligned',
+                    fromName: 'Laser Tutorial',
+                    timestamp: Date.now()
+                });
+            }
         }
     }
 
