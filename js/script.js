@@ -704,6 +704,10 @@ document.addEventListener('DOMContentLoaded', function () {
             mirror.style.transform = `rotate(${angle}deg)`;
         }
 
+        if (mirror.dataset) {
+            mirror.dataset.angle = angle.toString();
+        }
+
         if (mirrorData[mirror.id]) {
             mirrorData[mirror.id].angle = angle;
         }
@@ -761,6 +765,16 @@ document.addEventListener('DOMContentLoaded', function () {
                     // Prisma getroffen - Tutorial-Schritt 7 auslösen
                     if (tutorialStep >= 6) {
                         showStep7();
+
+                        // ✅ NEU: Signal an ProtoPie senden
+                        if (socket && socket.connected) {
+                            socket.emit('ppMessage', {
+                                messageId: 'mirror7Aligned',
+                                fromName: 'Laser Tutorial',
+                                timestamp: Date.now()
+                            });
+                            console.log('✅ Signal "mirror7Aligned" an ProtoPie gesendet');
+                        }
                     }
                     // Erfolgreich-Animation für das Prisma
                     prism.style.boxShadow = '0 0 20px 10px rgba(255, 100, 100, 1)';
@@ -1303,8 +1317,27 @@ document.addEventListener('DOMContentLoaded', function () {
         if (Math.abs(angle - 180) <= 5 && !mirror7Correct) {
             mirror7Correct = true;
             console.log('[Mirror7] Korrekt eingestellt!');
+            checkMirror7Alignment();
         } else if (Math.abs(angle - 180) > 5) {
             mirror7Correct = false;
+        }
+    }
+
+    function checkMirror7Alignment() {
+        const mirror7 = document.getElementById('mirror7');
+        if (!mirror7) return;
+
+        const angle = parseInt(mirror7.dataset.angle);
+        if (angle === 180) {
+            console.log('✅ Mirror7 korrekt ausgerichtet');
+
+            if (socket && socket.connected) {
+                socket.emit('ppMessage', {
+                    messageId: 'mirror7Aligned',
+                    fromName: 'Laser Tutorial',
+                    timestamp: Date.now()
+                });
+            }
         }
     }
 
