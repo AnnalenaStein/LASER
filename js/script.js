@@ -22,6 +22,14 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
+    document.addEventListener('keydown', function (event) {
+        if (event.key === 'q' || event.key === 'a') {
+            rotateMirror('mirror6', event.key === 'q' ? +1 : -1);
+            checkMirror6Alignment(); // ✅ prüft nach jeder Drehung
+        }
+    });
+
+
     // Tutorial starten
     function startTutorial() {
         console.log('[DEBUG] startTutorial() wird ausgeführt');
@@ -1258,6 +1266,25 @@ document.addEventListener('DOMContentLoaded', function () {
             mirror6Correct = false;
         }
     }
+
+    function checkMirror6Alignment() {
+        const mirror6 = document.getElementById('mirror6');
+        if (!mirror6) return;
+    
+        const angle = parseInt(mirror6.dataset.angle);
+        if (angle === 180) {
+            console.log('✅ Mirror6 korrekt ausgerichtet');
+    
+            if (socket && socket.connected) {
+                socket.emit('ppMessage', {
+                    messageId: 'mirror6Aligned',
+                    fromName: 'Laser Tutorial',
+                    timestamp: Date.now()
+                });
+            }
+        }
+    }
+    
 
     function setMirror7Angle(angle) {
         angle = ((angle % 360) + 360) % 360;
