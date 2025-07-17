@@ -758,6 +758,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 if (nextIntersection.type === 'prism') {
                     pathComplete = true;
+
+                    // HINZUGEFÜGT: Prisma getroffen - Nachricht an ProtoPie senden
+                    sendPrismaHitSignal();
+
                     // Prisma getroffen - Tutorial-Schritt 7 auslösen
                     if (tutorialStep >= 6) {
                         showStep7();
@@ -779,6 +783,40 @@ document.addEventListener('DOMContentLoaded', function () {
 
             segmentCount++;
         }
+    }
+
+    // HINZUGEFÜGT: Funktion um Prisma-Treffer an ProtoPie zu melden
+    function sendPrismaHitSignal() {
+        console.log('🎯 [Prisma] Getroffen! Sende Signal an ProtoPie');
+
+        // Socket.IO Nachricht senden
+        if (socket && socket.emit) {
+            socket.emit("ppMessage", {
+                messageId: "Prisma",
+                fromName: "Laser Tutorial",
+                timestamp: Date.now(),
+                data: {
+                    action: "prisma_hit",
+                    tutorialStep: tutorialStep,
+                    laserEnabled: laserEnabled
+                }
+            });
+            console.log('📡 [Socket.IO] Prisma-Signal gesendet');
+        } else {
+            console.log('❌ [Socket.IO] Nicht verbunden - Prisma-Signal nicht gesendet');
+        }
+
+        // Zusätzlich: PostMessage für lokale ProtoPie-Verbindung
+        window.postMessage({
+            type: 'protopie',
+            action: 'send',
+            name: 'Prisma',
+            data: {
+                prismaHit: true,
+                timestamp: Date.now()
+            }
+        }, '*');
+        console.log('📬 [PostMessage] Prisma-Signal gesendet');
     }
 
     // Finde den nächsten Schnittpunkt mit einem Spiegel oder dem Prisma
