@@ -529,6 +529,12 @@ document.addEventListener('DOMContentLoaded', function () {
                 const startOverlay = document.getElementById('start-overlay');
                 if (startOverlay) startOverlay.style.visibility = 'visible';
             }
+
+            // HINZUGEFÜGT: Neustart-Funktionalität - Seite neu laden
+            else if (messageId === "Neustart" || messageId === "restart" || messageId === "reset") {
+                console.log('🔄 [Socket.IO] Neustart empfangen - Seite wird neu geladen');
+                location.reload();
+            }
         });
 
         // Versuche zu verbinden
