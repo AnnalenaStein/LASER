@@ -22,13 +22,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    // document.addEventListener('keydown', function (event) {
-    //     if (event.key === 'q' || event.key === 'a') {
-    //         rotateMirror('mirror6', event.key === 'q' ? +1 : -1);
-    //         checkMirror6Alignment(); // ✅ prüft nach jeder Drehung
-    //     }
-    // });
-
 
     // Tutorial starten
     function startTutorial() {
@@ -53,6 +46,7 @@ document.addEventListener('DOMContentLoaded', function () {
     function showStep1() {
         tutorialStep = 1;
         console.log('[DEBUG] showStep1() aufgerufen');
+        calculateLaserPath();
 
         showTutorialText(
             `Laserlicht wird im gleichen Winkel reflektiert:<br>
@@ -303,15 +297,15 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // Schritt 5: Zusatzinfo
-    function showStep5() {
-        tutorialStep = 5;
-        showTutorialText(
-            'So stark, dass er Metall schneiden oder Daten durch Glasfasern senden kann.',
-            3000,
-            null,
-            'top-right'
-        );
-    }
+    // function showStep5() {
+    //     tutorialStep = 5;
+    //     showTutorialText(
+    //         'So stark, dass er Metall schneiden oder Daten durch Glasfasern senden kann.',
+    //         3000,
+    //         null,
+    //         'top-right'
+    //     );
+    // }
 
     // Schritt 6: Zweiter Spiegel (wird ausgelöst wenn Mirror6 korrekt)
     function showStep6() {
@@ -338,12 +332,12 @@ document.addEventListener('DOMContentLoaded', function () {
         // Entferne alle Spotlights
         removeSpotlight('mirror7');
 
-        showTutorialText(
-            'Super!',
-            2000,
-            completeTutorial,
-            'top-right'
-        );
+        // showTutorialText(
+        //     'Super!',
+        //     2000,
+        //     completeTutorial,
+        //     'top-right'
+        // );
     }
 
     // Tutorial beenden
@@ -628,6 +622,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Positioniere die Spiegel an festen Positionen
     function setupMirrors() {
+        document.getElementById('mirror6').style.opacity = '0';
+        document.getElementById('mirror7').style.opacity = '0';
         const containerWidth = document.querySelector('.container').offsetWidth;
         const containerHeight = document.querySelector('.container').offsetHeight;
 
@@ -1312,7 +1308,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         // Prüfe ob Spiegel korrekt eingestellt (um 180°)
-        if (Math.abs(angle - 180) <= 5 && !mirror6Correct) {
+        if (Math.abs(angle - 180) <= MIRROR_SIGNAL_TOLERANCE && !mirror6Correct) {
             mirror6Correct = true;
             console.log('[Mirror6] Korrekt eingestellt!');
 
@@ -1323,7 +1319,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             checkMirror6Alignment();
 
-        } else if (Math.abs(angle - 180) > 5) {
+        } else if (Math.abs(angle - 180) > MIRROR_SIGNAL_TOLERANCE) {
             mirror6Correct = false;
         }
     }
