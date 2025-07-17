@@ -57,7 +57,7 @@ document.addEventListener('DOMContentLoaded', function () {
         showTutorialText(
             `Laserlicht wird im gleichen Winkel reflektiert:<br>
             <strong>Einfallswinkel = Ausfallswinkel</strong>`,
-            4000,
+            8000,
             showStep2,
             'top-right'
         );
@@ -69,7 +69,7 @@ document.addEventListener('DOMContentLoaded', function () {
         tutorialStep = 2;
         showTutorialText(
             'Stelle den Spiegel so ein, dass der Laser zum nächsten Spiegel trifft.',
-            3000,
+            6000,
             showStep3,
             'top-right'
         );
@@ -99,8 +99,8 @@ document.addEventListener('DOMContentLoaded', function () {
         tutorialStep = 4;
 
         showTutorialText(
-            'Bei einem Laser haben alle Lichtteilchen dieselbe Farbe, Richtung und Schwingung.<br><br>Das macht den Strahl stark und präzise.',
-            4000,
+            'Bei einem Laser haben alle Lichtteilchen dieselbe Farbe, Richtung und Schwingung.',
+            9000,
             showStep5,
             'top-right'
         );
@@ -110,8 +110,8 @@ document.addEventListener('DOMContentLoaded', function () {
     function showStep5() {
         tutorialStep = 5;
         showTutorialText(
-            'So stark, dass er Metall schneiden oder Daten durch Glasfasern senden kann.',
-            3000,
+            'Das macht den Strahl stark und präzise. <br><br> So stark, dass er Metall schneiden oder Daten durch Glasfasern senden kann.',
+            8000,
             null,
             'top-right'
         );
