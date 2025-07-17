@@ -22,12 +22,12 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    document.addEventListener('keydown', function (event) {
-        if (event.key === 'q' || event.key === 'a') {
-            rotateMirror('mirror6', event.key === 'q' ? +1 : -1);
-            checkMirror6Alignment(); // ✅ prüft nach jeder Drehung
-        }
-    });
+    // document.addEventListener('keydown', function (event) {
+    //     if (event.key === 'q' || event.key === 'a') {
+    //         rotateMirror('mirror6', event.key === 'q' ? +1 : -1);
+    //         checkMirror6Alignment(); // ✅ prüft nach jeder Drehung
+    //     }
+    // });
 
 
     // Tutorial starten
@@ -271,23 +271,23 @@ document.addEventListener('DOMContentLoaded', function () {
     function removeSpotlight(mirrorId) {
         const mirror = document.getElementById(mirrorId);
         if (!mirror) return;
-    
+
         // Finde Spotlight in Nähe des Spiegels (basierend auf Position)
         const spotlights = document.querySelectorAll('.spotlight');
         spotlights.forEach(spotlight => {
             const rect = spotlight.getBoundingClientRect();
             const mirrorRect = mirror.getBoundingClientRect();
-    
+
             const dx = rect.left - mirrorRect.left;
             const dy = rect.top - mirrorRect.top;
-    
+
             // Wenn Spotlight ungefähr über dem Spiegel liegt – löschen
             if (Math.abs(dx) < 150 && Math.abs(dy) < 150) {
                 spotlight.remove();
             }
         });
     }
-    
+
 
     // Schritt 4: Laser-Erklärung (wird ausgelöst wenn Mirror6 bewegt wird)
     function showStep4() {
@@ -1262,6 +1262,9 @@ document.addEventListener('DOMContentLoaded', function () {
             if (tutorialStep >= 4) {
                 showStep6();
             }
+
+            checkMirror6Alignment();
+
         } else if (Math.abs(angle - 180) > 5) {
             mirror6Correct = false;
         }
@@ -1270,11 +1273,11 @@ document.addEventListener('DOMContentLoaded', function () {
     function checkMirror6Alignment() {
         const mirror6 = document.getElementById('mirror6');
         if (!mirror6) return;
-    
+
         const angle = parseInt(mirror6.dataset.angle);
         if (angle === 180) {
             console.log('✅ Mirror6 korrekt ausgerichtet');
-    
+
             if (socket && socket.connected) {
                 socket.emit('ppMessage', {
                     messageId: 'mirror6Aligned',
@@ -1284,7 +1287,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
     }
-    
+
 
     function setMirror7Angle(angle) {
         angle = ((angle % 360) + 360) % 360;
