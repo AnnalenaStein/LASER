@@ -501,35 +501,33 @@ document.addEventListener('DOMContentLoaded', function () {
             console.log('❌ Socket.IO nicht verfügbar - verwende Fallback-Modus');
         });
 
-        socket.on('ppMessage', (data) => {
-            console.log('[Socket.IO] Nachricht empfangen:', data);
-
-            if (!data || typeof data !== 'object') return;
-
-            const { messageId } = data;
-            console.log('[Socket.IO] messageId:', messageId);
-
-            if (messageId === "show") {
-                const startOverlay = document.getElementById('start-overlay');
-                if (startOverlay) startOverlay.style.visibility = 'hidden';
-
-                if (!tutorialActive && tutorialStep === 0) {
-                    console.log('[Socket] Starte Tutorial durch show');
-                    startTutorial();
-                }
-            }
-
-            else if (messageId === "hide") {
-                const startOverlay = document.getElementById('start-overlay');
-                if (startOverlay) startOverlay.style.visibility = 'visible';
-            }
-
-            // HINZUGEFÜGT: Neustart-Funktionalität - Seite neu laden
-            else if (messageId === "Neustart" || messageId === "restart" || messageId === "reset") {
-                console.log('🔄 [Socket.IO] Neustart empfangen - Seite wird neu geladen');
+        socket.on('protopie', function (data) {
+            console.log('[Socket.io] Nachricht empfangen:', data);
+        
+            // ⬇️ HIER ergänzt
+            if (data.messageId === "Neustart" || data.action === "Neustart" || data.messageId === "restart" || data.action === "restart") {
+                console.log('🔄 [ProtoPie] Neustart empfangen – Seite wird neu geladen');
                 location.reload();
             }
-        });
+        
+            if (data && data.type === 'protopie') {
+                if (data.action === 'show') {
+                    console.log('[ProtoPie] show empfangen - Tutorial startet (erzwungen)');
+                    tutorialActive = false;
+                    tutorialStep = 0;
+                    startTutorial();
+                }
+        
+                if (data.action === 'hide') {
+                    console.log('[ProtoPie] hide empfangen - Laser wird eingeschaltet');
+                    laserEnabled = true;
+                    if (laser) {
+                        laser.style.opacity = '1';
+                    }
+                    calculateLaserPath();
+                }
+            }
+        });        
 
         // Versuche zu verbinden
         socket.connect();
