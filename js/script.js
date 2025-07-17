@@ -142,12 +142,12 @@ document.addEventListener('DOMContentLoaded', function () {
         // Entferne alle Spotlights
         removeSpotlight('mirror7');
 
-        showTutorialText(
-            'Super!',
-            2000,
-            completeTutorial,
-            'top-right'
-        );
+        // showTutorialText(
+        //     'Super!',
+        //     2000,
+        //     completeTutorial,
+        //     'top-right'
+        // );
     }
 
     // Tutorial beenden
@@ -761,7 +761,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 drawLaserSegment(start, nextIntersection.point);
 
                 if (nextIntersection.type === 'prism') {
-                    pathComplete = true;
+                    pathComplete = false;
 
                     // HINZUGEFÜGT: Prisma getroffen - Nachricht an ProtoPie senden
                     sendPrismaHitSignal();

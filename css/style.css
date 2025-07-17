@@ -363,7 +363,7 @@ select:focus {
     font-family: 'Noway-Medium', 'Segoe UI', Arial, sans-serif !important;
     text-align: left;
     border: 1px solid rgba(255, 255, 255, 0.2);
-    font-size: 16px !important;
+    font-size: 18px !important;
     /* Geändert von 12px auf 16px */
     font-weight: normal;
 }
